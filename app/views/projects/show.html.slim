@@ -1,0 +1,87 @@
+- model_class = Project
+div class="page-header"
+  h1=t '.title', :default => model_class.model_name.human.titleize
+
+p
+  strong= model_class.human_attribute_name(:title) + ':'
+  br
+  = @project.title
+p
+  strong= model_class.human_attribute_name(:start) + ':'
+  br
+  = @project.start
+p
+  strong= model_class.human_attribute_name(:finish) + ':'
+  br
+  = @project.finish
+p
+  strong= model_class.human_attribute_name(:quote) + ':'
+  br
+  = @project.quote
+p
+  strong= model_class.human_attribute_name(:per_hour) + ':'
+  br
+  = @project.per_hour
+p
+  strong= model_class.human_attribute_name(:expected_percentage) + ':'
+  br
+  = @project.expected_percentage
+p
+  strong= model_class.human_attribute_name(:hours_so_far) + ':'
+  br
+  = @project.hours_so_far
+p
+  strong= model_class.human_attribute_name(:hours_expected) + ':'
+  br
+  = @project.hours_expected
+p
+  strong= model_class.human_attribute_name(:milestone) + ':'
+  br
+  = @project.milestone
+p
+  strong= model_class.human_attribute_name(:milestone_label) + ':'
+  br
+  = @project.milestone_label
+p
+  strong= model_class.human_attribute_name(:date_started) + ':'
+  br
+  = @project.date_started
+p
+  strong= model_class.human_attribute_name(:date_ended) + ':'
+  br
+  = @project.date_ended
+p
+  strong= model_class.human_attribute_name(:completed) + ':'
+  br
+  = @project.completed
+p
+  strong= model_class.human_attribute_name(:after_finalised) + ':'
+  br
+  = @project.after_finalised
+p
+  strong= model_class.human_attribute_name(:finalised) + ':'
+  br
+  = @project.finalised
+p
+  strong= model_class.human_attribute_name(:project_id) + ':'
+  br
+  = @project.project_id
+p
+  strong= model_class.human_attribute_name(:tt_module) + ':'
+  br
+  = @project.tt_module
+p
+  strong= model_class.human_attribute_name(:tt_project_id) + ':'
+  br
+  = @project.tt_project_id
+p
+  strong= model_class.human_attribute_name(:comments) + ':'
+  br
+  = @project.comments
+
+.form-actions
+  = link_to t('.back', :default => t("helpers.links.back")), projects_path, :class => 'btn'
+  '
+  = link_to t('.edit', :default => t("helpers.links.edit")), edit_project_path(@project), :class => 'btn'
+  '
+  = link_to t('.destroy', :default => t("helpers.links.destroy")), project_path(@project), :method => "delete", :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :class => 'btn btn-danger'

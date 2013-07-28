@@ -1,0 +1,31 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  project_id: 2
+  total: 500
+  vat_percent: 17.0
+  paid: true
+  invoice_no: 1
+  invoice_link: MyString
+  receipt_no: 1
+  receipt_link: MyString
+
+two:
+  project_id: 2
+  total: 700
+  vat_percent: 18.0
+  paid: false
+  invoice_no: 2
+  invoice_link: MyString
+  receipt_no: 2
+  receipt_link: MyString
+
+three:
+  project_id: 1
+  total: 300
+  vat_percent: 18.0
+  paid: false
+  invoice_no: 3
+  invoice_link: MyString
+  receipt_no: 3
+  receipt_link: MyString

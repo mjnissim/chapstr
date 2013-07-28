@@ -1,0 +1,53 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+master:
+  id: 1
+  title: Test Project
+  start:
+  finish:
+  quote: 5000
+  per_hour:
+  expected_percentage:
+  hours_so_far:
+  hours_expected: 100
+  milestone:
+  milestone_label: page
+  date_started: 2013-07-07
+  date_ended: 2013-07-07
+  project_id:
+  tt_project_id: 3079780
+  after_finalised: 700
+  tt_module: Toggl
+
+translation:
+  id: 2
+  title: Translation
+  start: 101
+  finish: 400
+  quote:
+  per_hour:
+  expected_percentage: 75
+  hours_so_far:
+  hours_expected:
+  milestone:
+  milestone_label:
+  date_started: 2013-07-07
+  date_ended: 2013-07-07
+  project_id: 1
+  tt_project_id:
+
+editing:
+  title: Editing
+  start:
+  finish:
+  quote: 
+  per_hour:
+  expected_percentage: 25
+  hours_so_far:
+  hours_expected:
+  milestone:
+  milestone_label:
+  date_started: 2013-07-07
+  date_ended: 2013-07-07
+  project_id: 1
+  tt_project_id:

@@ -1,0 +1,41 @@
+= form_for @invoice, :html => { :class => "form-horizontal" } do |f|
+  .control-group
+    = f.label :project_id, :class => 'control-label'
+    .controls
+      = f.text_field :project_id, :class => 'text_field'
+  .control-group
+    = f.label :total, :class => 'control-label'
+    .controls
+      = f.text_field :total, :class => 'text_field'
+  .control-group
+    = f.label :vat_percent, :class => 'control-label'
+    .controls
+      = f.text_field :vat_percent, :class => 'text_field'
+  .control-group
+    = f.label :paid, :class => 'control-label'
+    .controls
+      = f.text_field :paid, :class => 'text_field'
+  .control-group
+    = f.label :invoice_no, :class => 'control-label'
+    .controls
+      = f.text_field :invoice_no, :class => 'text_field'
+  .control-group
+    = f.label :invoice_link, :class => 'control-label'
+    .controls
+      = f.text_field :invoice_link, :class => 'text_field'
+  .control-group
+    = f.label :receipt_no, :class => 'control-label'
+    .controls
+      = f.text_field :receipt_no, :class => 'text_field'
+  .control-group
+    = f.label :receipt_link, :class => 'control-label'
+    .controls
+      = f.text_field :receipt_link, :class => 'text_field'
+  .control-group
+    = f.label :commments, :class => 'control-label'
+    .controls
+      = f.text_field :commments, :class => 'text_field'
+  .form-actions
+    = f.submit nil, :class => 'btn btn-primary'
+    '
+    = link_to t('.cancel', :default => t("helpers.links.cancel")), invoices_path, :class => 'btn'

@@ -1,0 +1,81 @@
+= form_for @project, :html => { :class => "form-horizontal" } do |f|
+  .control-group
+    = f.label :title, :class => 'control-label'
+    .controls
+      = f.text_field :title, :class => 'text_field'
+  .control-group
+    = f.label :start, :class => 'control-label'
+    .controls
+      = f.text_field :start, :class => 'text_field'
+  .control-group
+    = f.label :finish, :class => 'control-label'
+    .controls
+      = f.text_field :finish, :class => 'text_field'
+  .control-group
+    = f.label :quote, :class => 'control-label'
+    .controls
+      = f.text_field :quote, :class => 'text_field'
+  .control-group
+    = f.label :per_hour, :class => 'control-label'
+    .controls
+      = f.text_field :per_hour, :class => 'text_field'
+  .control-group
+    = f.label :expected_percentage, :class => 'control-label'
+    .controls
+      = f.text_field :expected_percentage, :class => 'text_field'
+  .control-group
+    = f.label :hours_so_far, :class => 'control-label'
+    .controls
+      = f.text_field :hours_so_far, :class => 'text_field'
+  .control-group
+    = f.label :hours_expected, :class => 'control-label'
+    .controls
+      = f.text_field :hours_expected, :class => 'text_field'
+  .control-group
+    = f.label :milestone, :class => 'control-label'
+    .controls
+      = f.text_field :milestone, :class => 'text_field'
+  .control-group
+    = f.label :milestone_label, :class => 'control-label'
+    .controls
+      = f.text_field :milestone_label, :class => 'text_field'
+  .control-group
+    = f.label :date_started, :class => 'control-label'
+    .controls
+      = f.text_field :date_started, :class => 'text_field'
+  .control-group
+    = f.label :date_ended, :class => 'control-label'
+    .controls
+      = f.text_field :date_ended, :class => 'text_field'
+  .control-group
+    = f.label :completed, :class => 'control-label'
+    .controls
+      = f.text_field :completed, :class => 'text_field'
+  .control-group
+    = f.label :after_finalised, :class => 'control-label'
+    .controls
+      = f.text_field :after_finalised, :class => 'text_field'
+  .control-group
+    = f.label :finalised, :class => 'control-label'
+    .controls
+      = f.text_field :finalised, :class => 'text_field'
+  .control-group
+    = f.label :project_id, :class => 'control-label'
+    .controls
+      = f.text_field :project_id, :class => 'text_field'
+  .control-group
+    = f.label :tt_module, :class => 'control-label'
+    .controls
+      = f.text_field :tt_module, :class => 'text_field'
+  .control-group
+    = f.label :tt_project_id, :class => 'control-label'
+    .controls
+      = f.text_field :tt_project_id, :class => 'text_field'
+  .control-group
+    = f.label :comments, :class => 'control-label'
+    .controls
+      = f.text_field :comments, :class => 'text_field'
+  .form-actions
+    = f.submit nil, :class => 'btn btn-primary'
+    '
+    = link_to t('.cancel', :default => t("helpers.links.cancel")), projects_path, :class => 'btn'
