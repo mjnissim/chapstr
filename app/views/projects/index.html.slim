@@ -4,52 +4,26 @@ div class="page-header"
 table class="table table-striped"
   thead
     tr
-      th= model_class.human_attribute_name(:id)
       th= model_class.human_attribute_name(:title)
-      th= model_class.human_attribute_name(:start)
-      th= model_class.human_attribute_name(:finish)
-      th= model_class.human_attribute_name(:quote)
-      th= model_class.human_attribute_name(:per_hour)
-      th= model_class.human_attribute_name(:expected_percentage)
-      th= model_class.human_attribute_name(:hours_so_far)
-      th= model_class.human_attribute_name(:hours_expected)
-      th= model_class.human_attribute_name(:milestone)
-      th= model_class.human_attribute_name(:milestone_label)
       th= model_class.human_attribute_name(:date_started)
-      th= model_class.human_attribute_name(:date_ended)
-      th= model_class.human_attribute_name(:completed)
-      th= model_class.human_attribute_name(:after_finalised)
-      th= model_class.human_attribute_name(:finalised)
-      th= model_class.human_attribute_name(:project_id)
-      th= model_class.human_attribute_name(:tt_module)
-      th= model_class.human_attribute_name(:tt_project_id)
+      th= model_class.human_attribute_name(:quote)
+      th= model_class.human_attribute_name(:next_charge)
+      th= model_class.human_attribute_name(:hours_so_far)
+      th= model_class.human_attribute_name(:relative_progress)
       th= model_class.human_attribute_name(:comments)
-      th= model_class.human_attribute_name(:created_at)
       th=t '.actions', :default => t("helpers.actions")
   tbody
     - @projects.each do |project|
       tr
-        td= link_to project.id, project_path(project)
-        td= project.title
-        td= project.start
-        td= project.finish
-        td= project.quote
-        td= project.per_hour
-        td= project.expected_percentage
-        td= project.hours_so_far
-        td= project.hours_expected
-        td= project.milestone
-        td= project.milestone_label
+        td= link_to project.title, project_path(project)
         td= project.date_started
-        td= project.date_ended
-        td= project.completed
-        td= project.after_finalised
-        td= project.finalised
-        td= project.project_id
-        td= project.tt_module
-        td= project.tt_project_id
+        td
+          = nice_price( project.quote )
+          = " (so far #{nice_price( project.charged_so_far )})"
+        td= nice_price( project.next_charge )
+        td= to_duration_string( project.duration )
+        td= nice_percent( project.relative_progress )
         td= project.comments
-        td=l project.created_at
         td
           = link_to t('.edit', :default => t("helpers.links.edit")), edit_project_path(project), :class => 'btn btn-mini'
           '

@@ -38,9 +38,4 @@ class ProjectTest < ActiveSupport::TestCase
   test "test no tt_project at all" do
   end
   
-  def to_duration_string duration
-    mm, ss = duration.divmod(60)
-    hh, mm = mm.divmod(60)
-    "%d:%d:%d" % [hh, mm, ss]
-  end
 end

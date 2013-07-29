@@ -4,6 +4,10 @@ class Project < ActiveRecord::Base
   belongs_to :master, :class_name => "Project", :foreign_key => :project_id
   has_many :invoices
   
+  def self.masters
+    where project_id: nil
+  end
+  
   # Recursively sums up all stages' relative progress.
   def relative_progress
     ar = stages.collect{ |pr| pr.relative_progress }
@@ -77,7 +81,8 @@ class Project < ActiveRecord::Base
   end
   
   def next_charge
-    ( ( quote - after_finalised ) * relative_progress / 100 ) - charged_so_far
+    sum = quote - after_finalised
+    ( sum * relative_progress / 100 ) - charged_so_far
   end
   alias :outstanding_charge :next_charge
   
