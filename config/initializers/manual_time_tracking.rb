@@ -1,9 +1,9 @@
 class ManualTimeTracking
-  class TTProject
+  class TTProject < Project
     attr_reader :finish
     
     def self.all
-      # Implement this: @project.class.masters.where(module: 'TabsonIt')
+      # Implement this: @project.class.masters.where(module: 'ManualTimeTracking')
     end
     
     def self.list
@@ -15,7 +15,7 @@ class ManualTimeTracking
     end
 
     def milestone
-      @project.progress
+      read_attribute :milestone
     end
     
     # Project duration in seconds.
