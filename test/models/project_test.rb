@@ -26,10 +26,10 @@ class ProjectTest < ActiveSupport::TestCase
   end
   
   test "test durations" do
-    puts "\n#{@master.title} => #{ to_duration_string( @master.duration ) }"
-    @master.stages.each do |stage|
-      puts "#{stage.title} => #{to_duration_string( stage.duration )}"
-    end
+    # puts "\n#{@master.title} => #{ to_duration_string( @master.duration ) }"
+    # @master.stages.each do |stage|
+    #   puts "#{stage.title} => #{to_duration_string( stage.duration )}"
+    # end
     assert_equal( 126_000, @master.duration )
     assert_equal( 54_000, @master.stages.first.duration )
     assert_equal( 61_200, @master.stages.second.duration )

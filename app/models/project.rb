@@ -22,6 +22,7 @@ class Project < ActiveRecord::Base
   def is_stage?
     master.present?
   end
+  alias :stage? :is_stage?
   
   # Recursively finds the super-master project.
   def super_master
@@ -81,10 +82,13 @@ class Project < ActiveRecord::Base
   end
   
   def next_charge
-    sum = quote - after_finalised
-    ( sum * relative_progress / 100 ) - charged_so_far
+    ( pre_finalised_quote * relative_progress / 100 ) - charged_so_far
   end
   alias :outstanding_charge :next_charge
+  
+  def pre_finalised_quote
+    quote - after_finalised
+  end
   
   def duration
     tt_project.duration
@@ -98,12 +102,27 @@ class Project < ActiveRecord::Base
     total_charge_so_far / duration_in_hours
   end
   
+  def per_milestone
+    if stage?
+      for_stage = pre_finalised_quote * expected_percentage / 100.0
+      for_stage / milestones
+    end
+  end
+  
   def total_charge_so_far
     charged_so_far + next_charge
   end
   alias :standing_charge total_charge_so_far
   
   def remaining_charge
-    quote - charged_so_far
+    quote - super_master.charged_so_far
+  end
+  
+  def quote
+    read_attribute( :quote ) || super_master.quote
+  end
+  
+  def after_finalised
+    read_attribute( :after_finalised ) || super_master.after_finalised
   end
 end
