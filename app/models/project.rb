@@ -19,6 +19,10 @@ class Project < ActiveRecord::Base
     end
   end
   
+  def entries
+    tt_project.entries
+  end
+  
   def is_stage?
     master.present?
   end
@@ -96,6 +100,13 @@ class Project < ActiveRecord::Base
   
   def duration_in_hours
     duration / 60 / 60
+  end
+  
+  def last_date
+    tt_project.last_date
+  end
+  
+  def milestones_for date
   end
   
   def per_hour_actual

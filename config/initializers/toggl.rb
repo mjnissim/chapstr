@@ -13,13 +13,21 @@ class Toggl
     get( url )
   end
   
-  # Time entries for a specific tag.
-  def self.entries_for tag, entries_to_search=nil
-    entries_to_search = time_entries if entries_to_search.nil?
-    
-    entries_to_search.select do |en|
-      en['tag_names'].map{ |t| t.upcase }.include?( tag.upcase )
+  # Time entries for a specific tag or date
+  def self.entries_for tag: nil, date: nil, entries_to_search: time_entries
+    if tag
+      entries_to_search.select! do |en|
+        en['tag_names'].map{ |t| t.upcase }.include?( tag.upcase )
+      end
     end
+    
+    if date
+      entries_to_search.select! do |en|
+        en['start'].to_date == date
+      end
+    end
+    
+    entries_to_search
   end
   
   # Returns an array of hashes for url.
@@ -71,7 +79,7 @@ class Toggl
     end
 
     # Take last number from description of latest time-entry.
-    def milestone
+    def milestone entries: entries
       entries.reverse.each do |en|
         desc = en['description']
         if desc.match( DYNAMIC_FINISH_LINE ) or
@@ -98,7 +106,8 @@ class Toggl
 
       if @project.is_stage?
         @entries = self.class.parent.entries_for(
-          @project.title, @project.master.tt_project.entries
+          tag: @project.title,
+          entries_to_search: @project.master.tt_project.entries
         )
       else
         # reject entries without projects or whose project is not the one I need
@@ -113,6 +122,37 @@ class Toggl
       entries.map{ |en| en['duration'] }.sum
     end
     
+    def entry_dates
+      entries.map{ |en| en['start'].to_date }.uniq
+    end
+    
+    def last_date
+      entry_dates.last
+    end
+    
+    def date_before_last
+      date_before last_date
+    end
+    
+    def date_before date
+      entry_dates.reverse.find{ |d| d<date}
+    end
+    
+    def milestones_for date
+      entries_for_date = self.class.parent.entries_for( date: date )
+      entries_before = self.class.parent.entries_for( date: date_before( date ) )
+      
+      first_milestone = milestone( entries: entries_before )
+      last_milestone = milestone( entries: entries_for_date )
+      
+      if first_milestone and last_milestone
+        last_milestone - first_milestone
+      end
+    end
+    
+    def earned_on date
+      milestones_for( date ).to_i * @project.per_milestone
+    end
 
   private
 
@@ -127,6 +167,7 @@ class Toggl
     def id
       project_hash['id']
     end
+    
     
   end
 end
