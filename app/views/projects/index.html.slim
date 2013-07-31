@@ -8,6 +8,7 @@ table class="table table-striped"
       th= model_class.human_attribute_name(:started)
       th= model_class.human_attribute_name(:quote)
       th= model_class.human_attribute_name(:next_charge)
+      th= model_class.human_attribute_name(:last_earned)
       th= model_class.human_attribute_name(:hours_so_far)
       th= model_class.human_attribute_name(:relative_progress)
       th= model_class.human_attribute_name(:comments)
@@ -21,6 +22,9 @@ table class="table table-striped"
           = nice_price( project.quote )
           = " (so far #{nice_price( project.charged_so_far )})"
         td= nice_price( project.next_charge )
+        td
+          = nice_price( project.earned_on( project.last_date ) )
+          = " (#{project.last_date.strftime( "%d %b" )})"
         td= to_duration_string( project.duration )
         td= nice_percent( project.relative_progress )
         td= project.comments

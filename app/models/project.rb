@@ -28,6 +28,10 @@ class Project < ActiveRecord::Base
   end
   alias :stage? :is_stage?
   
+  def super_master?
+    self == super_master
+  end
+  
   # Recursively finds the super-master project.
   def super_master
     master ? master.super_master : self
@@ -105,19 +109,22 @@ class Project < ActiveRecord::Base
   def last_date
     tt_project.last_date
   end
-  
-  def milestones_for date
-  end
-  
+    
   def per_hour_actual
     total_charge_so_far / duration_in_hours
   end
   
   def per_milestone
     if stage?
+      return 0 if milestones == 1 and not completed
       for_stage = pre_finalised_quote * expected_percentage / 100.0
       for_stage / milestones
     end
+  end
+  
+  def earned_on date
+    from_stages = stages.map{ |stage| stage.earned_on( date ) }.sum
+    tt_project.earned_on( date ).to_f + from_stages
   end
   
   def total_charge_so_far

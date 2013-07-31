@@ -13,18 +13,14 @@ class Toggl
     get( url )
   end
   
-  # Time entries for a specific tag or date
-  def self.entries_for tag: nil, date: nil, entries_to_search: time_entries
-    if tag
-      entries_to_search.select! do |en|
-        en['tag_names'].map{ |t| t.upcase }.include?( tag.upcase )
-      end
-    end
-    
-    if date
-      entries_to_search.select! do |en|
-        en['start'].to_date == date
-      end
+  # Time entries for a specific tag or date.
+  # Optionally supply entries to search from.
+  def self.entries_for tag: nil, date: nil, before_date: nil,
+    entries_to_search: time_entries
+    entries_to_search.select! do |en|
+      ( tag and en['tag_names'].map{ |t| t.upcase }.include?( tag.upcase ) ) ||
+      ( date and en['start'].to_date == date ) ||
+      ( before_date and en['start'].to_date < before_date )
     end
     
     entries_to_search
@@ -140,7 +136,7 @@ class Toggl
     
     def milestones_for date
       entries_for_date = self.class.parent.entries_for( date: date )
-      entries_before = self.class.parent.entries_for( date: date_before( date ) )
+      entries_before = self.class.parent.entries_for( before_date: date )
       
       first_milestone = milestone( entries: entries_before )
       last_milestone = milestone( entries: entries_for_date )
@@ -151,7 +147,11 @@ class Toggl
     end
     
     def earned_on date
-      milestones_for( date ).to_i * @project.per_milestone
+      milestones_for( date ).to_i * @project.per_milestone.to_f
+    end
+    
+    def last_earned
+      earned_on last_date
     end
 
   private
