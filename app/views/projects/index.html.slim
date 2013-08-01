@@ -24,7 +24,7 @@ table class="table table-striped"
         td= nice_price( project.next_charge )
         td
           = nice_price( project.earned_on( project.last_date ) )
-          = " (#{project.last_date.strftime( "%d %b" )})"
+          = " (#{project.last_date.strftime( "%d/%m" )})"
         td= to_duration_string( project.duration )
         td= nice_percent( project.relative_progress )
         td= project.comments

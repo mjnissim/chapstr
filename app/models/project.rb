@@ -38,7 +38,7 @@ class Project < ActiveRecord::Base
   end
   
   # Which time tracking module you will use.
-  # TODO: recursively find which module to use (in tt_module).
+  # TODO: recursively find which module to use (method: tt_module).
   def tt_module
     'Toggl'
   end
