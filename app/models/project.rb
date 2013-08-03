@@ -38,16 +38,17 @@ class Project < ActiveRecord::Base
   end
   
   # Which time tracking module you will use.
-  # TODO: recursively find which module to use (method: tt_module).
+  # FIX: read_attribute might be empty string, and not nil,
+  # so then this method might not work (method: tt_module).
   def tt_module
-    'Toggl'
+    read_attribute( :tt_module ) || master.tt_module
   end
   
   # Returns the equivalent time-tracking project object.
   def tt_project
-    return @tt_project if @tt_project
-
-    @tt_project = eval( "#{tt_module}::TTProject").new(self)
+    unless tt_module.nil?
+      @tt_project ||= eval( "#{tt_module}::TTProject").new(self)
+    end
   end
   
   # Recursively sums up all invoices from the project and its stages.

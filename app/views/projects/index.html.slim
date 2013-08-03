@@ -26,7 +26,7 @@
             td= project.date_started
             td= nice_price( project.quote )
             td= to_duration_string( project.duration )
-            td= nice_percent( project.relative_progress )
+            td= nice_percent( project.relative_progress.to_i )
             td= project.comments
               '
   .span4

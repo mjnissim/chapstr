@@ -8,7 +8,7 @@
         = @project.title
         '
         small
-          = nice_percent( @project.relative_progress )
+          = nice_percent( @project.relative_progress.to_i )
       
 .row
   .span5.offset1= render 'project_info_basic'
