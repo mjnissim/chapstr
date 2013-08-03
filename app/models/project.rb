@@ -19,10 +19,6 @@ class Project < ActiveRecord::Base
     end
   end
   
-  def entries
-    tt_project.entries
-  end
-  
   def is_stage?
     master.present?
   end
@@ -38,10 +34,9 @@ class Project < ActiveRecord::Base
   end
   
   # Which time tracking module you will use.
-  # FIX: read_attribute might be empty string, and not nil,
-  # so then this method might not work (method: tt_module).
   def tt_module
-    read_attribute( :tt_module ) || master.tt_module
+    mdl = read_attribute( :tt_module )
+    mdl.present? ? mdl : master.try(:tt_module)
   end
   
   # Returns the equivalent time-tracking project object.
@@ -59,7 +54,7 @@ class Project < ActiveRecord::Base
   alias :total_charges :charged_so_far
   
   def milestone
-    tt_project.milestone
+    tt_project.try(:milestone)
   end
   
   def milestones
@@ -76,7 +71,7 @@ class Project < ActiveRecord::Base
   end
   
   def finish
-    ( tt_project.finish || read_attribute( :finish ) ) || 1
+    ( tt_project.try( :finish ) || read_attribute( :finish ) ) || 1
   end
   
   # TODO: expand 'remaining_milestones', make recursive.
@@ -100,7 +95,7 @@ class Project < ActiveRecord::Base
   end
   
   def duration
-    tt_project.duration
+    tt_project.try(:duration).to_f
   end
   
   def duration_in_hours
@@ -108,15 +103,25 @@ class Project < ActiveRecord::Base
   end
   
   def last_date
-    tt_project.last_date
+    tt_project.try(:last_date)
   end
     
   def per_hour_actual
-    total_charge_so_far / duration_in_hours
+    sum = total_charge_so_far / duration_in_hours
+    sum.nan? ? 0.0 : sum
   end
   
   def per_hour_expected
-    quote / hours_expected
+    sum = quote / hours_expected
+    sum.nan? ? 0.0 : sum
+  end
+  
+  def expected_percentage
+    read_attribute( :expected_percentage ).to_i
+  end
+  
+  def hours_expected
+    read_attribute( :hours_expected ).to_i
   end
   
   def per_milestone
@@ -129,7 +134,7 @@ class Project < ActiveRecord::Base
   
   def earned_on date
     from_stages = stages.map{ |stage| stage.earned_on( date ) }.sum
-    tt_project.earned_on( date ).to_f + from_stages
+    tt_project.try( :earned_on, date ).to_f + from_stages
   end
   
   def total_charge_so_far
@@ -142,10 +147,14 @@ class Project < ActiveRecord::Base
   end
   
   def quote
-    read_attribute( :quote ) || super_master.quote
+    super_master? ? read_attribute( :quote ).to_f : super_master.quote
   end
   
   def after_finalised
-    read_attribute( :after_finalised ) || super_master.after_finalised
+    if super_master?
+      read_attribute( :after_finalised ).to_f
+    else
+      super_master.after_finalised
+    end
   end
 end

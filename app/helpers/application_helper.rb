@@ -6,7 +6,7 @@ module ApplicationHelper
   def to_duration_string duration
     mm, ss = duration.divmod(60)
     hh, mm = mm.divmod(60)
-    "%d:%d:%d" % [hh, mm, ss]
+    "%d:%02d:%02d" % [hh, mm, ss]
   end
   
   def nice_percent sum

@@ -25,7 +25,7 @@
               = link_to t('.edit', :default => t("helpers.links.edit")), edit_project_path(project), :class => 'btn btn-mini'
             td= project.date_started
             td= nice_price( project.quote )
-            td= to_duration_string( project.duration )
+            td= "~#{project.duration_in_hours.round}h"
             td= nice_percent( project.relative_progress.to_i )
             td= project.comments
               '

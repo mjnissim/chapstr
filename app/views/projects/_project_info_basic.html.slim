@@ -3,8 +3,8 @@ table class="table table-striped table-bordered"
     td
       strong Hours so far:
     td
-      .text-right= "~#{@project.duration_in_hours.round}h"
-    td.muted= "(#{@project.hours_expected} expected)"
+      .text-right= to_duration_string(@project.duration)
+    td.muted= "(#{@project.hours_expected} hrs expected)"
   tr
     td
       strong Charged so far:
@@ -21,11 +21,11 @@ table class="table table-striped table-bordered"
     td
       strong Per hour:
     td
-      .text-right= "~#{ nice_price( @project.per_hour_actual)} NIS"
-    td.muted= "(~#{ nice_price( @project.per_hour_expected.round ) } expected)"
+      .text-right= "#{ nice_price( @project.per_hour_actual)} NIS"
+    td.muted= "(#{ nice_price( @project.per_hour_expected ) } expected)"
   tr
     td
       Strong Last earned:
     td
       .text-right= "#{ nice_price( @project.earned_on( @project.last_date ) ) } NIS"
-    td.muted= "(on #{short_date( @project.last_date ) })"
+    td.muted= "(on #{short_date( @project.last_date ) })" if @project.last_date
