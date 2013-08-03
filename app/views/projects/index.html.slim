@@ -1,37 +1,35 @@
 - model_class = Project
-div class="page-header"
-  h1=t '.title', :default => "My #{model_class.model_name.human.pluralize}"
-table class="table table-striped table-hover"
-  thead
-    tr
-      th= model_class.human_attribute_name(:title)
-      th= model_class.human_attribute_name(:started)
-      th= model_class.human_attribute_name(:quote)
-      th= model_class.human_attribute_name(:next_charge)
-      th= model_class.human_attribute_name(:last_earned)
-      th= model_class.human_attribute_name(:hours_so_far)
-      th= model_class.human_attribute_name(:relative_progress)
-      th= model_class.human_attribute_name(:comments)
-      th=t '.actions', :default => t("helpers.actions")
-  tbody
-    - @projects.each do |project|
-      tr
-        td= link_to project.title, project_path(project)
-        td= project.date_started
-        td
-          = nice_price( project.quote )
-          = " (so far #{nice_price( project.charged_so_far )})"
-        td= nice_price( project.next_charge )
-        td
-          = nice_price( project.earned_on( project.last_date ) )
-          = " (#{ short_date( project.last_date ) })"
-        td= to_duration_string( project.duration )
-        td= nice_percent( project.relative_progress )
-        td= project.comments
-        td
-          = link_to t('.edit', :default => t("helpers.links.edit")), edit_project_path(project), :class => 'btn btn-mini'
-          '
-          = link_to t('.destroy', :default => t("helpers.links.destroy")), project_path(project), :method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :class => 'btn btn-mini btn-danger'
 
-= link_to t('.new', :default => t("helpers.links.new")), new_project_path, :class => 'btn btn-primary'
+.row
+  .span11
+    div class="page-header"
+      h1=t '.title', :default => "My #{model_class.model_name.human.pluralize}"
 
+.row
+  .span7
+    table class="table table-striped table-hover table-bordered"
+      thead
+        tr
+          th= model_class.human_attribute_name(:name)
+          th
+          th= model_class.human_attribute_name(:started)
+          th= model_class.human_attribute_name(:quote)
+          th= model_class.human_attribute_name(:hours)
+          th= model_class.human_attribute_name(:relative_progress)
+          th= model_class.human_attribute_name(:comments)
+      tbody
+        - @projects.each do |project|
+          tr
+            td= link_to project.title, project_path(project)
+            td
+              = link_to t('.edit', :default => t("helpers.links.edit")), edit_project_path(project), :class => 'btn btn-mini'
+            td= project.date_started
+            td= nice_price( project.quote )
+            td= to_duration_string( project.duration )
+            td= nice_percent( project.relative_progress )
+            td= project.comments
+              '
+  .span4
+.row
+  .span11
+    = link_to t('.new', :default => t("helpers.links.new")), new_project_path, :class => 'btn btn-primary'
