@@ -12,4 +12,8 @@ module ApplicationHelper
   def nice_percent sum
     number_to_percentage( sum, precision: 0 )
   end
+  
+  def short_date date
+    date.strftime( "%d/%m" )
+  end
 end

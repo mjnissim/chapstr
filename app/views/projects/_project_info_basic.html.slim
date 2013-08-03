@@ -1,0 +1,26 @@
+table class="table table-striped table-bordered"
+  tr
+    td Hours so far:
+    td
+      = "~#{@project.duration_in_hours.round}h"
+    td.muted= "(#{@project.hours_expected} expected)"
+  tr
+    td Charged so far:
+    td
+      = "#{ nice_price( @project.charged_so_far ) } NIS"
+    td.muted= "(#{ nice_price( @project.remaining_charge ) } remaining)"
+  tr
+    td Next charge:
+    td= "#{ nice_price( @project.next_charge ) } NIS"
+    td
+  tr
+    td Per hour:
+    td
+      = "~#{ nice_price( @project.per_hour_actual)} NIS"
+    td.muted= "(~#{ nice_price( @project.per_hour_expected.round ) } expected)"
+  tr
+    td
+      | Last earned:
+    td
+      = "#{ nice_price( @project.earned_on( @project.last_date ) ) } NIS"
+    td.muted= "(on #{short_date( @project.last_date ) })"

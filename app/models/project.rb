@@ -114,6 +114,10 @@ class Project < ActiveRecord::Base
     total_charge_so_far / duration_in_hours
   end
   
+  def per_hour_expected
+    quote / hours_expected
+  end
+  
   def per_milestone
     if stage?
       return 0 if milestones == 1 and not completed

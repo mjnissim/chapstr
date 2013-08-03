@@ -17,13 +17,12 @@ class Toggl
   # Optionally supply entries to search from.
   def self.entries_for tag: nil, date: nil, before_date: nil,
     entries_to_search: time_entries
-    entries_to_search = entries_to_search.select do |en|
+    
+    entries_to_search.select do |en|
       ( tag and en['tag_names'].map{ |t| t.upcase }.include?( tag.upcase ) ) ||
       ( date and en['start'].to_date == date ) ||
       ( before_date and en['start'].to_date < before_date )
     end
-    
-    entries_to_search
   end
   
   # Returns an array of hashes for url.
@@ -89,7 +88,8 @@ class Toggl
     # Scans entry descriptions for dynamic finish line.
     # Returns a dynamic finish line, or nil if none.
     # Dynamic finish line means a document might have started
-    # as "Page 5 of 30" but becomes "Page 10 of 32" and so on.
+    # as "Page 5 of 30" but becomes "Page 10 of 32" and so on,
+    # which is a common situation when editing documents.
     def finish
       $2.to_i if entries.reverse.find do |en|
         en['description'].match( DYNAMIC_FINISH_LINE )
@@ -113,7 +113,7 @@ class Toggl
       end
     end
     
-    # Takes same arguments as Toggl#entries_for class method,
+    # Takes same arguments as the Toggl#entries_for class method,
     # but searches only this instance's project entries.
     def entries_for args
       args[:entries_to_search] = entries

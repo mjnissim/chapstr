@@ -1,7 +1,7 @@
 - model_class = Project
 div class="page-header"
   h1=t '.title', :default => model_class.model_name.human.pluralize.titleize
-table class="table table-striped"
+table class="table table-striped table-hover"
   thead
     tr
       th= model_class.human_attribute_name(:title)
@@ -24,7 +24,7 @@ table class="table table-striped"
         td= nice_price( project.next_charge )
         td
           = nice_price( project.earned_on( project.last_date ) )
-          = " (#{project.last_date.strftime( "%d/%m" )})"
+          = " (#{ short_date( project.last_date ) })"
         td= to_duration_string( project.duration )
         td= nice_percent( project.relative_progress )
         td= project.comments
