@@ -36,6 +36,9 @@ class ProjectTest < ActiveSupport::TestCase
   end
   
   test "test no tt_project at all" do
+    assert_nothing_raised do
+      Project.new( title: "Test 87465" )
+    end
   end
   
 end

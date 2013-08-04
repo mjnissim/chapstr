@@ -41,8 +41,12 @@ class Project < ActiveRecord::Base
   
   # Returns the equivalent time-tracking project object.
   def tt_project
-    unless tt_module.nil?
-      @tt_project ||= eval( "#{tt_module}::TTProject").new(self)
+    return @tt_project if @tt_project
+    
+    if tt_module
+      @tt_project = eval( "#{tt_module}::TTProject").new(self)
+    else
+      @tt_project = TimeTrackingProjectStub.new
     end
   end
   
@@ -54,7 +58,7 @@ class Project < ActiveRecord::Base
   alias :total_charges :charged_so_far
   
   def milestone
-    tt_project.try(:milestone)
+    tt_project.milestone
   end
   
   def milestones
@@ -71,7 +75,7 @@ class Project < ActiveRecord::Base
   end
   
   def finish
-    ( tt_project.try( :finish ) || read_attribute( :finish ) ) || 1
+    ( tt_project.finish || read_attribute( :finish ) ) || 1
   end
   
   # TODO: expand 'remaining_milestones', make recursive.
@@ -95,15 +99,15 @@ class Project < ActiveRecord::Base
   end
   
   def duration
-    tt_project.try(:duration).to_f
+    tt_project.duration
   end
   
   def duration_in_hours
-    duration / 60 / 60
+    duration.to_f / 60 / 60
   end
   
   def last_date
-    tt_project.try(:last_date)
+    tt_project.last_date
   end
     
   def per_hour_actual
@@ -126,7 +130,7 @@ class Project < ActiveRecord::Base
   
   def per_milestone
     if stage?
-      return 0 if milestones == 1 and not completed
+      return 0.to_f if milestones == 1 and not completed
       for_stage = pre_finalised_quote * expected_percentage / 100.0
       for_stage / milestones
     end
@@ -134,7 +138,7 @@ class Project < ActiveRecord::Base
   
   def earned_on date
     from_stages = stages.map{ |stage| stage.earned_on( date ) }.sum
-    tt_project.try( :earned_on, date ).to_f + from_stages
+    tt_project.earned_on( date ) + from_stages
   end
   
   def total_charge_so_far
@@ -158,3 +162,18 @@ class Project < ActiveRecord::Base
     end
   end
 end
+
+# This class is for the sake of having a "stand-in" project
+# when there's no time-tracking module selected (like Toggl).
+class TimeTrackingProjectStub < OpenStruct
+  def initialize
+    super
+    self.duration = 0
+  end
+  
+  def earned_on date
+    0.to_f
+  end
+end
+
+
