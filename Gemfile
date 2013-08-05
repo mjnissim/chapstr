@@ -11,6 +11,7 @@ group :test, :development do
 end
 
 gem 'delayed_job_active_record'
+gem "workless", "~> 1.1.3"
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0'
