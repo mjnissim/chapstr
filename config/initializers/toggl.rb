@@ -99,29 +99,27 @@ class Toggl
     # Time entries for this project or stage.
     def entries
       return @entries if @entries
-      
-      if not local_store['entries']
-        refresh_data
-      else
-        self.delay.refresh_data
-      end
-      
-      @entries = local_store['entries']
-    end
-    
-    def refresh_data
+
       if @project.is_stage?
-        local_store['entries'] = self.class.parent.entries_for(
+        @entries = self.class.parent.entries_for(
           tag: @project.title,
           entries_to_search: @project.master.tt_project.entries
         )
+      elsif local_store['entries']
+          self.delay.refresh_data
+          @entries = local_store['entries']
       else
-        # reject entries without projects or whose project is not the one I need
-        local_store['entries'] = self.class.parent.time_entries.reject do |en|
-          en['project'].nil? or not en['project']['id'].equal?( id )
-        end
+        refresh_data
+        @entries = local_store['entries']
       end
-      @project.save
+    end
+    
+    def refresh_data
+      # reject entries without projects or whose project is not the one I need
+      local_store['entries'] = self.class.parent.time_entries.reject do |en|
+        en['project'].nil? or not en['project']['id'].equal?( id )
+      end
+      @project.save!
     end
     
     def local_store
