@@ -1,7 +1,7 @@
 class Project < ActiveRecord::Base
   has_many :stages, :class_name => "Project",
-    :foreign_key => :project_id
-  belongs_to :master, :class_name => "Project", :foreign_key => :project_id
+    :foreign_key => :project_id, inverse_of: :master
+  belongs_to :master, :class_name => "Project", :foreign_key => :project_id, inverse_of: :stages
   has_many :invoices
   serialize :local_store, Hash
   
