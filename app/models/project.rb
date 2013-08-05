@@ -3,6 +3,7 @@ class Project < ActiveRecord::Base
     :foreign_key => :project_id
   belongs_to :master, :class_name => "Project", :foreign_key => :project_id
   has_many :invoices
+  serialize :local_store, Hash
   
   def self.masters
     where project_id: nil

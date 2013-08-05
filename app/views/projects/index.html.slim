@@ -24,7 +24,8 @@
       tbody
         - @projects.each do |project|
           tr
-            td= link_to project.title, project_path(project)
+            td
+              strong= link_to project.title, project_path(project)
             td
               = link_to t('.edit', :default => t("helpers.links.edit")), edit_project_path(project), :class => 'btn btn-mini'
             td= project.date_started
