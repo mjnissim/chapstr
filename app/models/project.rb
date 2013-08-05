@@ -20,6 +20,10 @@ class Project < ActiveRecord::Base
     end
   end
   
+  def refresh_data
+    tt_project.refresh_data
+  end
+  
   def is_stage?
     master.present?
   end

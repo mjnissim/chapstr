@@ -106,12 +106,16 @@ class Toggl
           entries_to_search: @project.master.tt_project.entries
         )
       elsif local_store['entries'].present?
-          self.delay.refresh_data
+          delayed_refresh
           @entries = local_store['entries']
       else
         refresh_data
         @entries = local_store['entries']
       end
+    end
+    
+    def delayed_refresh
+      @project.delay.refresh_data
     end
     
     def refresh_data
