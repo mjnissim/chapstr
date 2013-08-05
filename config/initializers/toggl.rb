@@ -105,8 +105,9 @@ class Toggl
           tag: @project.title,
           entries_to_search: @project.master.tt_project.entries
         )
-      elsif local_store['entries']
-          self.delay.refresh_data
+      elsif local_store['entries'].present?
+          # self.delay.refresh_data
+          refresh_data
           @entries = local_store['entries']
       else
         refresh_data
