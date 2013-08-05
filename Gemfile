@@ -12,6 +12,7 @@ end
 
 gem 'delayed_job_active_record'
 gem "workless", "~> 1.1.3"
+gem 'daemons'
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0'
