@@ -106,7 +106,7 @@ class Toggl
           entries_to_search: @project.master.tt_project.entries
         )
       elsif local_store['entries'].present?
-        if env.production?
+        if Rails.env.production? or Rails.env.test?
           refresh_data
         else
           self.delay.refresh_data
