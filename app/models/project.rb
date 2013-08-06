@@ -19,11 +19,7 @@ class Project < ActiveRecord::Base
       ( relative_milestone.to_f / milestones ) * expected_percentage
     end
   end
-  
-  def refresh_data
-    tt_project.refresh_data
-  end
-  
+    
   def is_stage?
     master.present?
   end
