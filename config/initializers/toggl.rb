@@ -1,4 +1,4 @@
-class Toggl
+class Toggl < Project
   API_URL = "https://www.toggl.com/api/v6"
   API_KEY = ENV['TOGGL_API_KEY']
 
@@ -25,7 +25,25 @@ class Toggl
     end
   end
   
-  # Returns an array of hashes for url.
+  
+  def self.projects
+    url = "#{API_URL}/projects.json"
+    @@projects = get( url )
+  end
+  
+  # Returns a hash of module project IDs and names.
+  # Good for select-lists, etc.
+  def self.projects_list
+    # FIX: fill projects list with inject instead of 4 lines.
+    hash = {}
+    projects.each do |project|
+      hash[ project['id'] ] = project['name']
+    end
+    hash
+  end
+  
+  
+  # Returns an array of hashes for a given url.
   def self.get url
     uri = URI.parse(url)
     http = Net::HTTP.new(uri.host, uri.port)
@@ -44,31 +62,13 @@ class Toggl
     end
   end
   
-  class TTProject
-    
-    @@projects = nil
-    
-    def self.all
-      return @@projects if @@projects
-      
-      url = "#{API_URL}/projects.json"
-      @@projects = parent.get( url )
-    end
-    
-    def self.list
-      hash = {}
-      all.each do |project|
-        hash[ project['id'] ] = project['name']
-      end
-      hash
-    end
-    
-    def initialize project
-      @project = project
-      
+  
+  module Base
+    def initialize
       if super_master?
-        @project_hash = self.class.all.find do |pr|
-          pr['id'] == @project.super_master.tt_project_id
+        # @project_hash = self.class.all.find do |pr|
+        @project_hash = modul.projects.find do |pr|
+          pr['id'] == tt_project_id
         end
       end
     end
@@ -86,24 +86,27 @@ class Toggl
     end
     
     # Scans entry descriptions for dynamic finish line.
-    # Returns a dynamic finish line, or nil if none.
+    # Returns a dynamic finish line, or db-field value, or 1.
     # Dynamic finish line means a document might have started
     # as "Page 5 of 30" but becomes "Page 10 of 32" and so on,
     # which is a common situation when editing documents.
     def finish
-      $2.to_i if entries.reverse.find do |en|
+      found = entries.reverse.find do |en|
         en['description'].match( DYNAMIC_FINISH_LINE )
       end
+      return $2.to_i if found
+      # FIX: Should 'finish' ever return a db-field in the Toggl module?
+      read_attribute( :finish ) || 1
     end
 
     # Time entries for this project or stage.
     def entries
       return @entries if @entries
 
-      if @project.is_stage?
-        @entries = self.class.parent.entries_for(
-          tag: @project.title,
-          entries_to_search: @project.master.tt_project.entries
+      if is_stage?
+        @entries = modul.entries_for(
+          tag: title,
+          entries_to_search: master.entries
         )
       elsif local_store['entries'].present?
         if Rails.env.production? or Rails.env.test?
@@ -120,21 +123,17 @@ class Toggl
     
     def refresh_data
       # reject entries without projects or whose project is not the one I need
-      local_store['entries'] = self.class.parent.time_entries.reject do |en|
-        en['project'].nil? or not en['project']['id'].equal?( id )
+      local_store['entries'] = modul.time_entries.reject do |en|
+        en['project'].nil? or not en['project']['id'].equal?( project_hash['id'] )
       end
-      @project.save!
-    end
-    
-    def local_store
-      @project.local_store
+      save!
     end
     
     # Takes same arguments as the Toggl#entries_for class method,
     # but searches only this instance's project entries.
     def entries_for args
       args[:entries_to_search] = entries
-      self.class.parent.entries_for( args )
+      modul.entries_for( args )
     end
     
     # Project duration in seconds.
@@ -169,27 +168,17 @@ class Toggl
     end
     
     def earned_on date
-      milestones_for( date ).to_i * @project.per_milestone.to_f
+      from_stages = stages.map{ |stage| stage.earned_on( date ) }.sum
+      sum = milestones_for( date ).to_i * per_milestone.to_f
+      from_stages + sum
     end
     
     def last_earned
       earned_on last_date
     end
 
-  private
-
     def project_hash
-      @project_hash || @project.super_master.tt_project.project_hash
+      @project_hash || super_master.project_hash
     end
-    
-    def super_master?
-      @project == @project.super_master
-    end
-    
-    def id
-      project_hash['id']
-    end
-    
-    
   end
 end

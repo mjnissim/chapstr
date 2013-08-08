@@ -5,21 +5,47 @@ class Project < ActiveRecord::Base
   has_many :invoices
   serialize :local_store, Hash
   
+  @@implementations
+  
   def self.masters
     where project_id: nil
   end
   
+  after_initialize do
+    initialize_extension
+  end
+  
+  def initialize_extension
+    extend module_base_name.constantize
+  end
+  
+  # Which time tracking module you will use.
+  def tt_module
+    mdl = read_attribute( :tt_module )
+    mdl.present? ? mdl : master.try(:tt_module)
+  end
+
+  def module_name
+    tt_module || "TimeTrackingProjectStub"
+  end
+  
+  def module_base_name
+    "#{module_name}::Base"
+  end
+  
+  def modul
+    module_name.constantize
+  end
+  
   # Recursively sums up all stages' relative progress.
   def relative_progress
-    ar = stages.collect{ |pr| pr.relative_progress }
-    
-    if ar.any?
-      ar.sum
-    else
-      ( relative_milestone.to_f / milestones ) * expected_percentage
+    if stages.any?
+      from_stages = stages.collect{ |pr| pr.relative_progress }.sum
     end
+    sum = ( relative_milestone.to_f / milestones ) * expected_percentage
+    sum + from_stages.to_f
   end
-    
+      
   def is_stage?
     master.present?
   end
@@ -34,33 +60,12 @@ class Project < ActiveRecord::Base
     master ? master.super_master : self
   end
   
-  # Which time tracking module you will use.
-  def tt_module
-    mdl = read_attribute( :tt_module )
-    mdl.present? ? mdl : master.try(:tt_module)
-  end
-  
-  # Returns the equivalent time-tracking project object.
-  def tt_project
-    return @tt_project if @tt_project
-    
-    if tt_module
-      @tt_project = eval( "#{tt_module}::TTProject").new(self)
-    else
-      @tt_project = TimeTrackingProjectStub.new
-    end
-  end
-  
   # Recursively sums up all invoices from the project and its stages.
   def charged_so_far
     charges = stages.collect{ |pr| pr.charged_so_far }
     invoices.collect{ |inv| inv.total }.sum + charges.sum
   end
   alias :total_charges :charged_so_far
-  
-  def milestone
-    tt_project.milestone
-  end
   
   def milestones
     ( finish - start ) + 1
@@ -73,10 +78,6 @@ class Project < ActiveRecord::Base
   
   def start
     read_attribute( :start ) || 1
-  end
-  
-  def finish
-    ( tt_project.finish || read_attribute( :finish ) ) || 1
   end
   
   # TODO: expand 'remaining_milestones', make recursive.
@@ -99,18 +100,10 @@ class Project < ActiveRecord::Base
     quote - after_finalised
   end
   
-  def duration
-    tt_project.duration
-  end
-  
   def duration_in_hours
     duration.to_f / 60 / 60
   end
   
-  def last_date
-    tt_project.last_date
-  end
-    
   def per_hour_actual
     sum = total_charge_so_far / duration_in_hours
     sum.nan? ? 0.0 : sum
@@ -137,11 +130,6 @@ class Project < ActiveRecord::Base
     end
   end
   
-  def earned_on date
-    from_stages = stages.map{ |stage| stage.earned_on( date ) }.sum
-    tt_project.earned_on( date ) + from_stages
-  end
-  
   def total_charge_so_far
     charged_so_far + next_charge
   end
@@ -166,15 +154,12 @@ end
 
 # This class is for the sake of having a "stand-in" project
 # when there's no time-tracking module selected (like Toggl).
-class TimeTrackingProjectStub < OpenStruct
-  def initialize
-    super
-    self.duration = 0
-  end
-  
-  def earned_on date
-    0.to_f
+module TimeTrackingProjectStub
+  # TODO: perhaps some class methods for TimeTrackingProjectStub?
+  module Base
+    def duration() 0 end
+    def earned_on( date ) 0.to_f end
+    def method_missing( method_name ) nil end
   end
 end
-
 
