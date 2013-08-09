@@ -64,15 +64,6 @@ class Toggl < Project
   
   
   module Base
-    def initialize
-      if super_master?
-        # @project_hash = self.class.all.find do |pr|
-        @project_hash = modul.projects.find do |pr|
-          pr['id'] == tt_project_id
-        end
-      end
-    end
-
     # Take last number from description of latest time-entry.
     def milestone entries: entries
       entries.reverse.each do |en|
@@ -178,7 +169,15 @@ class Toggl < Project
     end
 
     def project_hash
-      @project_hash || super_master.project_hash
+      return @project_hash if @project_hash
+      
+      if super_master?
+        @project_hash = modul.projects.find do |pr|
+          pr['id'] == tt_project_id
+        end
+      end
+      
+      @project_hash
     end
   end
 end

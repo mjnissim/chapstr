@@ -62,8 +62,8 @@ class Project < ActiveRecord::Base
   
   # Recursively sums up all invoices from the project and its stages.
   def charged_so_far
-    charges = stages.collect{ |pr| pr.charged_so_far }
-    invoices.collect{ |inv| inv.total }.sum + charges.sum
+    charges = stages.collect{ |pr| pr.charged_so_far }.sum
+    invoices.collect{ |inv| inv.total }.sum + charges
   end
   alias :total_charges :charged_so_far
   
@@ -160,6 +160,7 @@ module TimeTrackingProjectStub
     def duration() 0 end
     def earned_on( date ) 0.to_f end
     def method_missing( method_name ) nil end
+    def finish() 1 end
   end
 end
 
