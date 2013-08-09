@@ -5,10 +5,18 @@ class Project < ActiveRecord::Base
   has_many :invoices
   serialize :local_store, Hash
   
-  @@implementations
+  @@implementations = []
   
   def self.masters
     where project_id: nil
+  end
+  
+  def self.inherited subclass
+    @@implementations << subclass
+  end
+
+  def self.implementations
+    @@implementations
   end
   
   after_initialize do
@@ -16,7 +24,7 @@ class Project < ActiveRecord::Base
   end
   
   def initialize_extension
-    extend module_base_name.constantize
+    extend modul::Base
   end
   
   # Which time tracking module you will use.
@@ -25,16 +33,9 @@ class Project < ActiveRecord::Base
     mdl.present? ? mdl : master.try(:tt_module)
   end
 
-  def module_name
-    tt_module || "TimeTrackingProjectStub"
-  end
-  
-  def module_base_name
-    "#{module_name}::Base"
-  end
-  
   def modul
-    module_name.constantize
+    m = tt_module || "TimeTrackingProjectStub"
+    m.constantize
   end
   
   # Recursively sums up all stages' relative progress.
