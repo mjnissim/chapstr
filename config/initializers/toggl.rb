@@ -77,7 +77,8 @@ class Toggl < Project
     end
     
     # Scans entry descriptions for dynamic finish line.
-    # Returns a dynamic finish line, or db-field value, or 1.
+    # Returns a dynamic finish line, or db-field value, or 
+    # the same value as start.
     # Dynamic finish line means a document might have started
     # as "Page 5 of 30" but becomes "Page 10 of 32" and so on,
     # which is a common situation when editing documents.
@@ -87,7 +88,7 @@ class Toggl < Project
       end
       return $2.to_i if found
       # FIX: Should 'finish' ever return a db-field in the Toggl module?
-      read_attribute( :finish ) || 1
+      read_attribute( :finish ) || start
     end
 
     # Time entries for this project or stage.

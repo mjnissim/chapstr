@@ -161,7 +161,7 @@ module TimeTrackingProjectStub
     def duration() 0 end
     def earned_on( date ) 0.to_f end
     def method_missing( method_name ) nil end
-    def finish() 1 end
+    def finish() start end
   end
 end
 

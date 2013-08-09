@@ -25,7 +25,7 @@ class ProjectTest < ActiveSupport::TestCase
     assert_in_delta 650.to_f, @master.next_charge, 0.00001
   end
   
-  test "test durations" do
+  test "durations" do
     # puts "\n#{@master.title} => #{ to_duration_string( @master.duration ) }"
     # @master.stages.each do |stage|
     #   puts "#{stage.title} => #{to_duration_string( stage.duration )}"
@@ -35,10 +35,11 @@ class ProjectTest < ActiveSupport::TestCase
     assert_equal( 61_200, @master.stages.second.duration )
   end
   
-  test "test no tt_project at all" do
+  test "no module at all" do
     assert_nothing_raised do
-      Project.new( title: "Test 87465" )
+      p = Project.new( title: "Test 87465" )
+      p.relative_progress
     end
   end
-  
+
 end
