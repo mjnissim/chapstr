@@ -76,6 +76,11 @@ class Toggl < Project
       nil
     end
     
+    def initialized?
+      tt_module and project_hash.present?
+    end
+    alias :initialised? :initialized?
+    
     # Scans entry descriptions for dynamic finish line.
     # Returns a dynamic finish line, or db-field value, or 
     # the same value as start.

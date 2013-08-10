@@ -4,7 +4,7 @@ class ProjectsController < ApplicationController
   # GET /projects
   # GET /projects.json
   def index
-    @projects = Project.masters
+    @projects = Project.masters.sort_by{ |p| p.initialized? ? 1 : 0 }
     @project = Project.new
   end
 
@@ -29,7 +29,8 @@ class ProjectsController < ApplicationController
 
     respond_to do |format|
       if @project.save
-        format.html { redirect_to projects_path, notice: 'Project was successfully created.' }
+        # format.html { redirect_to projects_path, notice: 'Project was successfully created.' }
+        format.html { redirect_to projects_path }
         format.json { render action: 'show', status: :created, location: @project }
       else
         format.html { render action: 'new' }
