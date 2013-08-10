@@ -165,11 +165,12 @@ class Project < ActiveRecord::Base
     end
   end
   
+  # Generates a new title for a project, like "New Project 17".
   def self.new_title
     match_str = /#{NEW_PROJECT_TITLE} (\d+)/i
     titles = pluck(:title).select{ |p| p =~ match_str }
-    nums = titles.map{ |t| t.match( match_str )[1].to_i }
-    num = nums.sort!.reverse!.first
+    nums = titles.map{ |t| t.match( match_str )[1] }
+    num = nums.sort!.reverse!.first.to_i
     "#{NEW_PROJECT_TITLE} #{num + 1}"
   end
   
