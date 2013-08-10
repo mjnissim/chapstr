@@ -1,9 +1,12 @@
 class Project < ActiveRecord::Base
-  has_many :stages, :class_name => "Project",
-    :foreign_key => :project_id, inverse_of: :master
-  belongs_to :master, :class_name => "Project", :foreign_key => :project_id, inverse_of: :stages
+  has_many :stages, class_name: "Project",
+    foreign_key: :project_id, inverse_of: :master
+  belongs_to :master, class_name: "Project", foreign_key: :project_id,
+    inverse_of: :stages
   has_many :invoices
   serialize :local_store, Hash
+
+  NEW_PROJECT_TITLE = "New Project"
   
   @@implementations = []
   
@@ -160,6 +163,18 @@ class Project < ActiveRecord::Base
     else
       super_master.after_finalised
     end
+  end
+  
+  def self.new_title
+    match_str = /#{NEW_PROJECT_TITLE} (\d+)/i
+    titles = pluck(:title).select{ |p| p =~ match_str }
+    nums = titles.map{ |t| t.match( match_str )[1].to_i }
+    num = nums.sort!.reverse!.first
+    "#{NEW_PROJECT_TITLE} #{num + 1}"
+  end
+  
+  before_create do |project|
+    project.title = self.class.new_title if project.title.blank?
   end
 end
 
