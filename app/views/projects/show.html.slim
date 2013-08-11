@@ -1,8 +1,8 @@
 - model_class = Project
 - content_for :title, @project.title
 
-.row
-  .span11
+.row-fluid
+  .span12
     div class="page-header"
       h1
         = @project.title
@@ -10,26 +10,26 @@
         small
           = nice_percent( @project.relative_progress.to_i )
       
-.row
-  .span5.offset1= render 'project_info_basic'
+.row-fluid
+  .span11.offset1= render 'project_info_basic'
 
-.row
-  .span5.offset1
+.row-fluid
+  .span12
     p.pull-right.btn.btn-info.btn-small
       = "more stats..."
 
 .container-fluid
   = render partial: 'stage_inline', collection: @project.stages, as: :stage
   
-.row
-  .span11
+.row-fluid
+  .span12
     p
       strong= model_class.human_attribute_name(:comments) + ':'
       br
       = @project.comments || "None."
 
-.row
-  .span11
+.row-fluid
+  .span12
     .form-actions
       = link_to t('.back', :default => t("helpers.links.back")), projects_path, :class => 'btn'
       '

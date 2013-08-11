@@ -4,7 +4,7 @@ table class="table table-striped table-bordered"
       strong Hours so far:
     td
       .text-right= to_duration_string(@project.duration)
-    td.muted= "(#{@project.hours_expected} hrs expected)"
+    td.muted= "(#{@project.hours_expected.round} hrs expected)"
   tr
     td
       strong Charged so far:

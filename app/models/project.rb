@@ -114,7 +114,7 @@ class Project < ActiveRecord::Base
   end
   
   def per_hour_expected
-    sum = quote / hours_expected
+    sum = quote / hours_expected.to_f
     sum.nan? ? 0.0 : sum
   end
   
@@ -133,7 +133,9 @@ class Project < ActiveRecord::Base
   end
   
   def hours_expected
-    read_attribute( :hours_expected ).to_i
+    sum = read_attribute( :hours_expected ).to_f
+    return sum unless sum.zero?
+    master.hours_expected * relative_expected_percentage / 100.0
   end
   
   def per_milestone

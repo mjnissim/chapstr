@@ -3,12 +3,15 @@
     h3
       = stage.title
       '
-      small= "25/75%"
+      small= percent_of( stage )
 
     .row-fluid
       .span4.offset1
-        p 100 hrs (expected 150)
-        p Per hour: 100.0
+        p= hours_of stage 
+        p
+          = "Per hour:"
+          '
+          = nice_price( stage.per_hour_actual )
 
         p.btn.btn-info.btn-mini
           = "more..."
