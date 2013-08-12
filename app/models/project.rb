@@ -135,7 +135,7 @@ class Project < ActiveRecord::Base
   def hours_expected
     sum = read_attribute( :hours_expected ).to_f
     return sum unless sum.zero?
-    master.hours_expected * relative_expected_percentage / 100.0
+    master.try( :hours_expected ).to_f * relative_expected_percentage / 100.0
   end
   
   def per_milestone
