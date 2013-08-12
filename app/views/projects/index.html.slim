@@ -34,10 +34,7 @@
                   '
                   = t('.edit', :default => t("helpers.links.edit"))
               - else
-                = link_to "#myModal", :class => 'btn btn-mini btn-warning', :'data-toggle' => "modal", :role=>"button" do
-                  i.icon-wrench
-                  '
-                  = " Setup your project"
+                = link_to_modal_form( project )
             td= project.date_started
             td= nice_price( project.quote )
             td= "~#{project.duration_in_hours.round}h"
@@ -45,4 +42,5 @@
             td= project.comments
               '
 / This is the code for the project setup modal.
-= render 'project_setup'
+- @projects.each do | project |
+  = render( 'project_setup', :project=>project ) unless project.initialized?

@@ -1,13 +1,13 @@
-#myModal.modal.hide.fade aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1"
+= content_tag :div, id: "#{ idify( project ) }", :class=>"modal hide fade", :"aria-hidden" => "true", :"aria-labelledby" => "myModalLabel", role: "dialog", tabindex: "-1" do
   .modal-header
     button.close aria-hidden="true" data-dismiss="modal" type="button"
-    h3#myModalLabel Setting up your project
+    h3#myModalLabel Setting Up Your Project
   .modal-body
     p Which Time Tracking software would you like to use?
-
+    p= project.title
     select.selectpicker
       - Project.implementations.each do | implementation |
-        option= implementation
+        option= implementation.to_s.titleize
     
   .modal-footer
     button.btn aria-hidden="true" data-dismiss="modal"
