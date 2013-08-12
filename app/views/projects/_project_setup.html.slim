@@ -1,0 +1,14 @@
+#myModal.modal.hide.fade aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1"
+  .modal-header
+    button.close aria-hidden="true" data-dismiss="modal" type="button"
+    h3#myModalLabel Setting up your project
+  .modal-body
+    p Which Time Tracking software would you like to use?
+
+    select.selectpicker
+      - Project.implementations.each do | implementation |
+        option= implementation
+    
+  .modal-footer
+    button.btn aria-hidden="true" data-dismiss="modal"
+    button.btn.btn-primary data-dismiss="modal" Save changes

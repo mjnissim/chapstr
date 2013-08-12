@@ -41,5 +41,8 @@ class ProjectTest < ActiveSupport::TestCase
       p.relative_progress
     end
   end
+  
+  test "Toggl with invalid project id" do
+  end
 
 end

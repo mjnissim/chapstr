@@ -5,6 +5,8 @@ class Toggl < Project
   DYNAMIC_FINISH_LINE = /(\d+) of (\d+)/i
   NUMBER_APPEARS = /.*\W(\d+)/
   
+  # https://www.toggl.com/user/edit
+  
   def self.time_entries
     tomorrow = Date.tomorrow.to_formatted_s(:db)
     two_years_ago = 2.years.ago.to_date.to_formatted_s(:db)

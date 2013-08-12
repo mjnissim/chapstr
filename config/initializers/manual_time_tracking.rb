@@ -1,5 +1,5 @@
-class ManualTimeTracking
-  class TTProject < Project
+class ManualTimeTracking < Project
+  class Base
     attr_reader :finish
     
     def self.all

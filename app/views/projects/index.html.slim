@@ -24,17 +24,25 @@
           th= model_class.human_attribute_name(:comments)
       tbody
         - @projects.each do |project|
-          tr class="#{ 'warning' unless project.initialized? }"
+          tr
             td
               strong= link_to project.title, project_path(project)
             td
               - if project.initialized?
-                = link_to t('.edit', :default => t("helpers.links.edit")), edit_project_path(project), :class => 'btn btn-mini'
+                = link_to edit_project_path(project), :class => 'btn btn-mini' do
+                  i.icon-pencil
+                  '
+                  = t('.edit', :default => t("helpers.links.edit"))
               - else
-                = link_to "Setup your project", edit_project_path(project), :class => 'btn btn-mini'
+                = link_to "#myModal", :class => 'btn btn-mini btn-warning', :'data-toggle' => "modal", :role=>"button" do
+                  i.icon-wrench
+                  '
+                  = " Setup your project"
             td= project.date_started
             td= nice_price( project.quote )
             td= "~#{project.duration_in_hours.round}h"
             td= nice_percent( project.relative_progress.to_i )
             td= project.comments
               '
+/ This is the code for the project setup modal.
+= render 'project_setup'
