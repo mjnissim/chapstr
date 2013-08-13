@@ -18,4 +18,8 @@ module ProjectsHelper
   def idify project
     project.title.parameterize.camelize(:lower)
   end
+  
+  def last_earned project
+    "#{ nice_price( project.earned_on( project.last_date ) ) } NIS"
+  end
 end
