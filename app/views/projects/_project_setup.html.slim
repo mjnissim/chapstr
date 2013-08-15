@@ -4,10 +4,11 @@
     h3#myModalLabel Setting Up Your Project
   .modal-body
     p Which Time Tracking software would you like to use?
-    p= project.title
-    select.selectpicker
+    select.selectpicker.module
       - Project.implementations.each do | implementation |
         option= implementation.to_s.titleize
+
+    div#moshe
     
   .modal-footer
     button.btn aria-hidden="true" data-dismiss="modal"

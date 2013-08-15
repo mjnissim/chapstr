@@ -39,8 +39,9 @@
             td= nice_price( project.quote )
             td= "~#{project.duration_in_hours.round}h"
             td= nice_percent( project.relative_progress.to_i )
-            td= project.comments
-              '
+            td
+              = project.comments            
+
 / This is the code for the project setup modal.
 - @projects.each do | project |
   = render( 'project_setup', :project=>project ) unless project.initialized?
