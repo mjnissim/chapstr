@@ -1,16 +1,9 @@
 
-paintIt = (element, backgroundColor, textColor) ->
-  element.style.backgroundColor = backgroundColor
-  if textColor?
-    element.style.color = textColor
-
-mosheThis = () ->
-  $.ajax(url: "/test").done (html) ->
-	  $("#moshe").append html
- 
-$ ->
-  $("select.module").change ->
-    backgroundColor = $(this).data("background-color")
-    textColor = $(this).data("text-color")
-    paintIt(this, backgroundColor, textColor)
-    mosheThis()
+// getModuleForm = ( module ) ->
+//   $.ajax(url: "/module-forms/#{module}", dataType: 'html').done (html) ->
+// 	  $("#module-form").html html.substring(1,html.length-2)
+//  
+// $ ->
+//   $("select.module").change ->
+//     module = $(this).val()
+//     getModuleForm( module )

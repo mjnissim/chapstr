@@ -62,6 +62,14 @@ class ProjectsController < ApplicationController
       format.json { head :no_content }
     end
   end
+  
+  # def module_form
+  #   @module = params[:module]
+  #   respond_to do |format|
+  #     # format.js { render partial: "#{@module}/setup" }
+  #     format.js { render :module_setup }
+  #   end
+  # end
 
   private
     # Use callbacks to share common setup or constraints between actions.

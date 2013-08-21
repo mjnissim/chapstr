@@ -7,23 +7,24 @@ class Toggl < Project
   
   # https://www.toggl.com/user/edit
   
-  def self.time_entries
+  def self.time_entries from_date: 15.years.ago
     tomorrow = Date.tomorrow.to_formatted_s(:db)
-    two_years_ago = 2.years.ago.to_date.to_formatted_s(:db)
+    from_date = from_date.to_date.to_formatted_s(:db)
     url = "#{API_URL}/time_entries.json"
-    url << "?start_date=#{two_years_ago}&end_date=#{tomorrow}"
+    url << "?start_date=#{from_date}&end_date=#{tomorrow}"
     get( url )
   end
   
   # Time entries for a specific tag or date.
   # Optionally supply entries to search from.
   def self.entries_for tag: nil, date: nil, before_date: nil,
-    entries_to_search: time_entries
+    from_date: nil, entries_to_search: time_entries
     
     entries_to_search.select do |en|
       ( tag and en['tag_names'].map{ |t| t.upcase }.include?( tag.upcase ) ) ||
       ( date and en['start'].to_date == date ) ||
-      ( before_date and en['start'].to_date < before_date )
+      ( before_date and en['start'].to_date < before_date ) ||
+      ( from_date and en['start'].to_date >= from_date )
     end
   end
   

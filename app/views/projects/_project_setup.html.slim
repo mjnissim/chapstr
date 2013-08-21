@@ -3,12 +3,17 @@
     button.close aria-hidden="true" data-dismiss="modal" type="button"
     h3#myModalLabel Setting Up Your Project
   .modal-body
-    p Which Time Tracking software would you like to use?
+    label Which Time Tracking software would you like to use?
     select.selectpicker.module
+      option value="" Please select
       - Project.implementations.each do | implementation |
-        option= implementation.to_s.titleize
+        option value=implementation.to_s.underscore = implementation.to_s.titleize
+    
+    a(rel="popover" href="#" data-html="true" data-content="<b>Moshe</b> is the best!"
+      data-trigger="hover focus")
+      'hover over me
 
-    div#moshe
+    div#module-form
     
   .modal-footer
     button.btn aria-hidden="true" data-dismiss="modal"
