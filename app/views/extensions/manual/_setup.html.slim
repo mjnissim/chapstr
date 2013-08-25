@@ -1,0 +1,13 @@
+p
+  'OK, we're set up and now you can use your project!
+  'In Manual insertion mode you need to supply all the data yourself,
+  'like work hours, etc.
+  
+p Press 'Save' to start.
+
+=form_for @project do | f |
+  = f.hidden_field :tt_module
+
+  .modal-footer
+  
+    = f.submit 'Save', :class=>"btn btn-primary"

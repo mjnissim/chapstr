@@ -1,5 +1,5 @@
 class ProjectsController < ApplicationController
-  before_action :set_project, only: [:show, :edit, :update, :destroy]
+  before_action :set_project, only: [:show, :edit, :update, :destroy, :extension_setup]
 
   # GET /projects
   # GET /projects.json
@@ -63,13 +63,19 @@ class ProjectsController < ApplicationController
     end
   end
   
-  # def module_form
-  #   @module = params[:module]
-  #   respond_to do |format|
-  #     # format.js { render partial: "#{@module}/setup" }
-  #     format.js { render :module_setup }
-  #   end
-  # end
+  def extension_setup
+    @extension = params[:extension]
+    respond_to do |format|
+      format.js do
+        if @extension.blank?
+          render nothing: true
+        else
+          @project.tt_module = @extension.camelize
+          render partial: "extensions/#{@extension}/setup"
+        end
+      end
+    end
+  end
 
   private
     # Use callbacks to share common setup or constraints between actions.

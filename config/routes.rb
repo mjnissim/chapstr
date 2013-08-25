@@ -1,7 +1,14 @@
 Chapstr::Application.routes.draw do
   
   resources :invoices
-  resources :projects
+  resources :projects do
+    member do
+      get :setup
+    end
+  end
+  
+  get 'extensions/:id/:extension' => 'projects#extension_setup'
+  get 'extensions/:id' => 'projects#extension_setup'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

@@ -82,7 +82,6 @@ class Toggl < Project
     def initialized?
       tt_module and project_hash.present?
     end
-    alias :initialised? :initialized?
     
     # Scans entry descriptions for dynamic finish line.
     # Returns a dynamic finish line, or db-field value, or 
@@ -172,6 +171,18 @@ class Toggl < Project
     
     def last_earned
       earned_on last_date
+    end
+    
+    def current_stage
+      dates = super_master.stages.map do |stg|
+        [ stg, stg.entries.last['start'].to_datetime ]
+      end
+      
+      dates.sort_by{ |d| d[1] }.last[0]
+    end
+    
+    def current_stage?
+      self == current_stage
     end
 
     def project_hash

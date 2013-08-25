@@ -1,14 +1,15 @@
 #getModuleForm = ( module ) ->
-#  $.ajax(url: "/module-forms/#{module}", dataType: 'html').done (html) ->
-#	  $("#module-form").html html.substring(1,html.length-2)
+#	$(".collapse").collapse('hide')
+#	$("##{module}").collapse('show')
 
 
- 
-getModuleForm = ( module ) ->
-	$(".collapse").collapse('hide')
-	$("##{module}").collapse('show')
+getModuleForm = ( module, project ) ->
+  $.ajax(url: "/extensions/#{project}/#{module}", dataType: 'html').done (html) ->
+	  $("#module-form").html html
+
  
 $ ->
 	$("select.module").change ->
 		module = $(this).val()
-		getModuleForm( module )
+		project = $(this).attr('id')
+		getModuleForm( module, project )
