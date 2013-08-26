@@ -30,4 +30,13 @@ module ProjectsHelper
   def last_earned project
     "#{ nice_price( project.earned_on( project.last_date ) ) } NIS"
   end
+  
+  def refresh_button project
+    refresh_state = session[project.id][:set_refresh]
+    button_to( set_refresh_project_path(project), remote: true,
+      data: { toggle: 'button', state: refresh_state },
+        :class=>"btn btn-primary btn-small refresh-button" ) do
+        refresh_state ? "Refresh On" : "Refresh"
+    end
+  end
 end

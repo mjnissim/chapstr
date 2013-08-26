@@ -2,13 +2,15 @@
 - content_for :title, @project.title
 
 .row-fluid
-  .span12
+  .span10
     div class="page-header"
       h1
         = @project.title
         '
         small
           = nice_percent( @project.relative_progress.to_i )
+  .span2
+    = refresh_button @project
       
 .row-fluid
   .span11.offset1= render 'project_info_basic'

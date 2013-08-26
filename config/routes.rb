@@ -4,6 +4,7 @@ Chapstr::Application.routes.draw do
   resources :projects do
     member do
       get :setup
+      post :set_refresh
     end
   end
   

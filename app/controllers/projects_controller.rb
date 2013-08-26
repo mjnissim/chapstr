@@ -1,5 +1,6 @@
 class ProjectsController < ApplicationController
-  before_action :set_project, only: [:show, :edit, :update, :destroy, :extension_setup]
+  before_action :set_project, only: [:show, :edit, :update, :destroy,
+    :extension_setup, :set_refresh]
 
   # GET /projects
   # GET /projects.json
@@ -76,11 +77,18 @@ class ProjectsController < ApplicationController
       end
     end
   end
+  
+  def set_refresh
+    refresh = session[@project.id][:set_refresh]
+    session[@project.id][:set_refresh] = !!!refresh
+    render nothing: true
+  end
 
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_project
       @project = Project.find(params[:id])
+      session[@project.id]={} unless session[@project.id]
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
