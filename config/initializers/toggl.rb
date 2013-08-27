@@ -178,7 +178,7 @@ class Toggl < Project
         [ stg, stg.entries.last['start'].to_datetime ]
       end
       
-      dates.sort_by{ |d| d[1] }.last[0]
+      dates.sort_by{ |d| d[1] }.last[0] unless dates.none?
     end
     
     def current_stage?

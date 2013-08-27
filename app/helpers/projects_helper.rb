@@ -39,4 +39,19 @@ module ProjectsHelper
         refresh_state ? "Refresh On" : "Refresh"
     end
   end
+  
+  def project_title project
+    current_stage = project.current_stage
+    refresh_on = session[project.id][:set_refresh]
+    return project.title if not (current_stage and refresh_on)
+
+    milestone = current_stage.milestone
+    finish = current_stage.finish
+
+    if milestone and finish
+      "#{ milestone } of #{ finish } - " <<
+      "#{ nice_percent( project.relative_progress ) } " <<
+      "(#{ last_earned( project ) })"
+    end
+  end
 end
