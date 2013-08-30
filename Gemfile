@@ -16,6 +16,8 @@ gem "workless", "~> 1.1.3"
 # gem 'daemons'
 # gem "heroku_delayed_job_autoscale", "~> 0.0.7"
 
+gem 'devise'
+
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0'
 

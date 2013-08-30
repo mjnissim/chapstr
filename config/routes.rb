@@ -1,5 +1,6 @@
 Chapstr::Application.routes.draw do
   
+  devise_for :users
   resources :invoices
   resources :projects do
     member do
