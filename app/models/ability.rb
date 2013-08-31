@@ -6,8 +6,12 @@ class Ability
     puts user.email
     
     # can :manage, Project, user_id: user.id
-    can :manage, Project do |project|
+    can :manage, Project do | project |
       project.user_id == user.id
+    end
+    
+    can :manage, Invoice do | invoice |
+      invoice.project.user_id == user.id
     end
     
     # Define abilities for the passed in user here. For example:
