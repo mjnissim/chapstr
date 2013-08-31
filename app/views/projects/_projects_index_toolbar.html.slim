@@ -2,5 +2,6 @@
   .input-prepend.input-append
     span.add-on
       i.icon-plus-sign
+    = f.hidden_field :user_id, value: current_user.id
     = f.text_field :title, placeholder: "New Project", :class => "span9", id: "appendedPrependedInput"
     = f.submit 'Create', :class => 'btn'

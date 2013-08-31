@@ -4,6 +4,7 @@ class Project < ActiveRecord::Base
   belongs_to :master, class_name: "Project", foreign_key: :project_id,
     inverse_of: :stages
   has_many :invoices
+  belongs_to :user
   serialize :local_store, Hash
 
   NEW_PROJECT_TITLE = "New Project"
@@ -12,6 +13,10 @@ class Project < ActiveRecord::Base
   
   def self.masters
     where project_id: nil
+  end
+  
+  def self.by_user user
+    where user_id: user
   end
   
   def self.inherited subclass

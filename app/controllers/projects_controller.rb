@@ -1,11 +1,13 @@
 class ProjectsController < ApplicationController
   before_action :set_project, only: [:show, :edit, :update, :destroy,
     :extension_setup, :set_refresh]
+  load_and_authorize_resource # CanCan
     
   # GET /projects
   # GET /projects.json
   def index
-    @projects = Project.masters.sort_by{ |p| p.initialized? ? 1 : 0 }
+    @projects = Project.masters.by_user( current_user )
+    @projects = @projects.sort_by{ |p| p.initialized? ? 1 : 0 }
     @project = Project.new
   end
 
@@ -93,6 +95,6 @@ class ProjectsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def project_params
-      params.require(:project).permit(:title, :start, :finish, :quote, :per_hour, :expected_percentage, :hours_so_far, :hours_expected, :milestone, :milestone_label, :date_started, :date_ended, :completed, :after_finalised, :finalised, :project_id, :tt_module, :tt_project_id, :comments)
+      params.require(:project).permit(:title, :start, :finish, :quote, :per_hour, :expected_percentage, :hours_so_far, :hours_expected, :milestone, :milestone_label, :date_started, :date_ended, :completed, :after_finalised, :finalised, :project_id, :tt_module, :tt_project_id, :comments, :user_id)
     end
 end
