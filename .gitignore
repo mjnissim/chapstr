@@ -17,4 +17,4 @@
 scripts_used
 *.tmproj
 .env
-config/database.yml
+/config/database.yml
