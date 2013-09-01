@@ -54,7 +54,7 @@ class Project < ActiveRecord::Base
     sum = ( relative_milestone.to_f / milestones ) * relative_expected_percentage
     sum + from_stages.to_f
   end
-      
+  
   def is_stage?
     master.present?
   end

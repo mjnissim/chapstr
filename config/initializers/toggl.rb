@@ -137,6 +137,14 @@ class Toggl < Project
       entries.map{ |en| en['duration'] }.sum
     end
     
+    def date_started
+      entries.first['start'].to_date
+    end
+
+    def date_ended
+      entries.last['stop'].to_date
+    end
+
     def entry_dates
       entries.map{ |en| en['start'].to_date }.uniq
     end

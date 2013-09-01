@@ -16,4 +16,10 @@ module ApplicationHelper
   def short_date date
     date.strftime( "%d/%m" )
   end
+  
+  def nice_date date
+    d = date.strftime( "%-d %b" )
+    return d if date.year == Date.today.year
+    d + " #{date.year}"
+  end
 end

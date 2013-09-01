@@ -35,7 +35,7 @@
                   = t('.edit', :default => t("helpers.links.edit"))
               - else
                 = link_to_modal_form( project )
-            td= project.date_started
+            td= nice_date( project.date_started )
             td= nice_price( project.quote )
             td= "~#{project.duration_in_hours.round}h"
             td= nice_percent( project.relative_progress.to_i )
