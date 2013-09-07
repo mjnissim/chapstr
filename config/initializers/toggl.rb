@@ -143,7 +143,7 @@ class Toggl < Project
     end
     
     def date_started
-      entries.first['start'].to_date
+      entries.first['start'].to_date if entries.any?
     end
 
     def date_ended

@@ -51,7 +51,7 @@ class Project < ActiveRecord::Base
     if stages.any?
       from_stages = stages.collect{ |pr| pr.relative_progress }.sum
     end
-    sum = ( relative_milestone.to_f / milestones ) * relative_expected_percentage
+    sum=(relative_milestone.to_f / milestones) * relative_expected_percentage
     sum + from_stages.to_f
   end
   
