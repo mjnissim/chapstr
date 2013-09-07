@@ -18,6 +18,7 @@ module ApplicationHelper
   end
   
   def nice_date date
+    return "" if date.blank?
     d = date.strftime( "%-d %b" )
     return d if date.year == Date.today.year
     d + " #{date.year}"

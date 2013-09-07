@@ -21,7 +21,7 @@ class Toggl < Project
     from_date: nil, entries_to_search: time_entries
     
     entries_to_search.select do |en|
-      ( tag and en['tag_names'].map{ |t| t.upcase }.include?( tag.upcase ) ) ||
+      ( tag and en['tags'].map{ |t| t.upcase }.include?( tag.upcase ) ) ||
       ( date and en['start'].to_date == date ) ||
       ( before_date and en['start'].to_date < before_date ) ||
       ( from_date and en['start'].to_date >= from_date )
@@ -96,7 +96,7 @@ class Toggl < Project
     # which is a common situation when editing documents.
     def finish
       found = entries.reverse.find do |en|
-        en['description'].match( DYNAMIC_FINISH_LINE )
+        en['description'] and en['description'].match( DYNAMIC_FINISH_LINE )
       end
       return $2.to_i if found
       # FIX: Should 'finish' ever return a db-field in the Toggl module?
@@ -124,8 +124,8 @@ class Toggl < Project
     
     def refresh_data
       # reject entries without projects or whose project is not the one I need
-      local_store['entries'] = modul.time_entries.reject do |en|
-        en['project'].nil? or not en['project']['id'].equal?( project_hash['id'] )
+      local_store['entries'] = modul.time_entries.select do |en|
+        en['pid'] == project_hash['id']
       end
       save!
     end
