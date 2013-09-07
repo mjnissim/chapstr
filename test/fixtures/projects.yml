@@ -18,6 +18,7 @@ master:
   tt_project_id: 3079780
   after_finalised: 700
   tt_module: Toggl
+  user_id: 1
 
 translation:
   id: 2
@@ -35,6 +36,7 @@ translation:
   date_ended: 2013-07-07
   project_id: 1
   tt_project_id:
+  user_id: 1
 
 editing:
   title: Editing
@@ -51,3 +53,4 @@ editing:
   date_ended: 2013-07-07
   project_id: 1
   tt_project_id:
+  user_id: 1

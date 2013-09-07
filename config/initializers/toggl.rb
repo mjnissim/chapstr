@@ -1,5 +1,5 @@
 class Toggl < Project
-  API_URL = "https://www.toggl.com/api/v6"
+  API_URL = "https://www.toggl.com/api/v8"
   API_KEY = ENV['TOGGL_API_KEY']
 
   DYNAMIC_FINISH_LINE = /(\d+) of (\d+)/i
@@ -8,9 +8,9 @@ class Toggl < Project
   # https://www.toggl.com/user/edit
   
   def self.time_entries from_date: 15.years.ago
-    tomorrow = Date.tomorrow.to_formatted_s(:db)
-    from_date = from_date.to_date.to_formatted_s(:db)
-    url = "#{API_URL}/time_entries.json"
+    tomorrow = CGI.escape( Date.tomorrow.to_time.iso8601 )
+    from_date = CGI.escape( from_date.to_time.iso8601 )
+    url = "#{API_URL}/time_entries"
     url << "?start_date=#{from_date}&end_date=#{tomorrow}"
     get( url )
   end
@@ -28,9 +28,14 @@ class Toggl < Project
     end
   end
   
+  def self.get_workspace_id
+    url = "#{API_URL}/workspaces"
+    ar = get( url )
+    ar.first.values.first
+  end
   
   def self.projects
-    url = "#{API_URL}/projects.json"
+    url = "#{API_URL}/workspaces/#{get_workspace_id}/projects"
     @@projects = get( url )
   end
   
@@ -48,19 +53,19 @@ class Toggl < Project
   
   # Returns an array of hashes for a given url.
   def self.get url
-    uri = URI.parse(url)
-    http = Net::HTTP.new(uri.host, uri.port)
+    uri = URI.parse( url )
+    http = Net::HTTP.new( uri.host, uri.port )
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    request = Net::HTTP::Get.new(uri.request_uri)
-    request.basic_auth(API_KEY, "api_token")
-    response = http.request(request)
+    request = Net::HTTP::Get.new( uri.request_uri )
+    request.basic_auth( API_KEY, "api_token" )
+    request["Content-Type"] = "application/json"
+    response = http.request( request )
     
     if response.code.to_i==200
-      hash = JSON.parse(response.body)
-      hash['data']
+      hash = JSON.parse( response.body )
     else
-      puts "Error, code #{response.code}."
+      puts "Error, code #{ response.code }."
       puts response.body
     end
   end
