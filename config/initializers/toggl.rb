@@ -147,7 +147,7 @@ class Toggl < Project
     end
 
     def date_ended
-      entries.last['stop'].to_date
+      entries.last['stop'].to_date if entries.any?
     end
 
     def entry_dates
@@ -188,7 +188,8 @@ class Toggl < Project
     
     def current_stage
       dates = super_master.stages.map do |stg|
-        [ stg, stg.entries.last['start'].to_datetime ]
+        date = stg.entries.last['start'].to_datetime if stg.entries.any?
+        [ stg, date ]
       end
       
       dates.sort_by{ |d| d[1] }.last[0] unless dates.none?
