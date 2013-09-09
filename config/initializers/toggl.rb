@@ -170,10 +170,17 @@ class Toggl < Project
       entries_for_date = entries_for( date: date )
       entries_before = entries_for( before_date: date )
       
-      prev_milestone = milestone( entries: entries_before ).to_i
+      if date_before_last.nil?
+        prev_milestone = start
+      else
+        prev_milestone = milestone( entries: entries_before )
+      end
+      
       latest_milestone = milestone( entries: entries_for_date )
       
-      latest_milestone - prev_milestone if latest_milestone
+      if latest_milestone and prev_milestone
+        latest_milestone - prev_milestone
+      end
     end
     
     def earned_on date
