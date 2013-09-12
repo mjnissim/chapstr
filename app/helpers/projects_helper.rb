@@ -54,4 +54,10 @@ module ProjectsHelper
       "(#{ last_earned( project ) })"
     end
   end
+  
+  def last_date_in_words project
+    if project.last_date
+      "#{distance_of_time_in_words_to_now( project.last_date ) } ago"
+    end
+  end
 end

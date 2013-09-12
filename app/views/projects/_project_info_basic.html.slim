@@ -28,4 +28,4 @@ table class="table table-striped table-bordered"
       Strong Last earned:
     td
       Strong.pull-right= last_earned( @project )
-    td.muted= "(on #{short_date( @project.last_date ) })" if @project.last_date
+    td.muted= last_date_in_words @project
