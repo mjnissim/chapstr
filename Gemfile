@@ -12,7 +12,7 @@ end
 
 gem 'delayed_job_active_record'#, "~> 4.0.0"
 # gem "workless", "~> 1.2.0"
-gem "workless", "~> 1.1.3"
+# gem "workless", "~> 1.1.3"
 gem 'daemons'
 # gem "heroku_delayed_job_autoscale", "~> 0.0.7"
 
