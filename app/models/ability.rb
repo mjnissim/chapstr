@@ -3,7 +3,6 @@ class Ability
 
   def initialize(user)
     user ||= User.new # guest user (not logged in)
-    puts user.email
     
     # can :manage, Project, user_id: user.id
     can :manage, Project do | project |
