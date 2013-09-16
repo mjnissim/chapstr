@@ -114,7 +114,10 @@ class Toggl < Project
         )
       else
         if local_store['entries'].present?
-          self.delay.refresh_data
+          # When delayed_job works with rails 4.0...
+          # self.delay.refresh_data
+          # until then:
+          refresh_data
         else
           refresh_data
         end
