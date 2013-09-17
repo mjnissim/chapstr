@@ -5,7 +5,7 @@ class Project < ActiveRecord::Base
     inverse_of: :stages
   has_many :invoices
   belongs_to :user
-  serialize :local_store, Hash
+  serialize :settings, Hash
 
   NEW_PROJECT_TITLE = "New Project"
   

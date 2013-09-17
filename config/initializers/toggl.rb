@@ -113,7 +113,7 @@ class Toggl < Project
           entries_to_search: master.entries
         )
       else
-        if local_store['entries'].present?
+        if settings['entries'].present?
           # When delayed_job works with rails 4.0...
           # self.delay.refresh_data
           # until then:
@@ -121,13 +121,13 @@ class Toggl < Project
         else
           refresh_data
         end
-        @entries = local_store['entries']
+        @entries = settings['entries']
       end
     end
     
     def refresh_data
       # reject entries without projects or whose project is not the one I need
-      local_store['entries'] = modul.time_entries.select do |en|
+      settings['entries'] = modul.time_entries.select do |en|
         en['pid'] == project_hash['id']
       end
       save!

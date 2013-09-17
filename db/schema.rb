@@ -11,36 +11,36 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130831124630) do
+ActiveRecord::Schema.define(version: 20130917140207) do
 
   create_table "delayed_jobs", force: true do |t|
-    t.integer  "priority",   default: 0, null: false
-    t.integer  "attempts",   default: 0, null: false
-    t.text     "handler",                null: false
-    t.text     "last_error"
-    t.datetime "run_at"
-    t.datetime "locked_at"
-    t.datetime "failed_at"
-    t.string   "locked_by"
-    t.string   "queue"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.integer   "priority",   default: 0, null: false
+    t.integer   "attempts",   default: 0, null: false
+    t.text      "handler",                null: false
+    t.text      "last_error"
+    t.timestamp "run_at"
+    t.timestamp "locked_at"
+    t.timestamp "failed_at"
+    t.string    "locked_by"
+    t.string    "queue"
+    t.timestamp "created_at"
+    t.timestamp "updated_at"
   end
 
-  add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
+  add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority"
 
   create_table "invoices", force: true do |t|
-    t.integer  "project_id"
-    t.decimal  "total"
-    t.decimal  "vat_percent"
-    t.boolean  "paid"
-    t.integer  "invoice_no"
-    t.string   "invoice_link"
-    t.integer  "receipt_no"
-    t.string   "receipt_link"
-    t.text     "commments"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.integer   "project_id"
+    t.decimal   "total"
+    t.decimal   "vat_percent"
+    t.boolean   "paid"
+    t.integer   "invoice_no"
+    t.string    "invoice_link"
+    t.integer   "receipt_no"
+    t.string    "receipt_link"
+    t.text      "commments"
+    t.timestamp "created_at"
+    t.timestamp "updated_at"
   end
 
   create_table "projects", force: true do |t|
@@ -65,26 +65,27 @@ ActiveRecord::Schema.define(version: 20130831124630) do
     t.text     "comments"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.text     "local_store"
+    t.text     "settings"
     t.integer  "user_id",             null: false
   end
 
   create_table "users", force: true do |t|
-    t.string   "email",                  default: "", null: false
-    t.string   "encrypted_password",     default: "", null: false
-    t.string   "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          default: 0
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
-    t.string   "current_sign_in_ip"
-    t.string   "last_sign_in_ip"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.string    "email",                  default: "", null: false
+    t.string    "encrypted_password",     default: "", null: false
+    t.string    "reset_password_token"
+    t.timestamp "reset_password_sent_at"
+    t.timestamp "remember_created_at"
+    t.integer   "sign_in_count",          default: 0
+    t.timestamp "current_sign_in_at"
+    t.timestamp "last_sign_in_at"
+    t.string    "current_sign_in_ip"
+    t.string    "last_sign_in_ip"
+    t.timestamp "created_at"
+    t.timestamp "updated_at"
+    t.text      "settings"
   end
 
-  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
-  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
+  add_index "users", ["email"], name: "index_users_on_email", unique: true
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
 
 end
