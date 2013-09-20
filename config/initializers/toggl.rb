@@ -1,25 +1,25 @@
 class Toggl < Project
   API_URL = "https://www.toggl.com/api/v8"
-  API_KEY = ENV['TOGGL_API_KEY']
 
   DYNAMIC_FINISH_LINE = /(\d+) of (\d+)/i
   NUMBER_APPEARS = /.*\W(\d+)/
   
   # https://www.toggl.com/user/edit
   
-  def self.time_entries from_date: 15.years.ago
+  def self.time_entries api_key, from_date: 15.years.ago
     tomorrow = CGI.escape( Date.tomorrow.to_time.iso8601 )
     from_date = CGI.escape( from_date.to_time.iso8601 )
     url = "#{API_URL}/time_entries"
     url << "?start_date=#{from_date}&end_date=#{tomorrow}"
-    get( url )
+    get( url, api_key )
   end
   
   # Time entries for a specific tag or date.
   # Optionally supply entries to search from.
   def self.entries_for tag: nil, date: nil, before_date: nil,
-    from_date: nil, entries_to_search: time_entries
+    from_date: nil, entries_to_search: nil
     
+    entries_to_search ||= time_entries( api_key )
     entries_to_search.select do |en|
       ( tag and en['tags'].map{ |t| t.upcase }.include?( tag.upcase ) ) ||
       ( date and en['start'].to_date == date ) ||
@@ -28,23 +28,24 @@ class Toggl < Project
     end
   end
   
-  def self.get_workspace_id
+  def self.get_workspace_id api_key
     url = "#{API_URL}/workspaces"
-    ar = get( url )
+    ar = get( url, api_key )
     ar.first.values.first
   end
   
-  def self.projects
-    url = "#{API_URL}/workspaces/#{get_workspace_id}/projects"
-    @@projects = get( url )
+  def self.projects api_key
+    ws_id = get_workspace_id( api_key )
+    url = "#{API_URL}/workspaces/#{ws_id}/projects"
+    @@projects = get( url, api_key )
   end
   
   # Returns a hash of module project IDs and names.
   # Good for select-lists, etc.
-  def self.projects_list
+  def self.projects_list api_key
     # FIX: fill projects list with inject instead of 4 lines.
     hash = {}
-    projects.each do |project|
+    projects( api_key ).each do |project|
       hash[ project['id'] ] = project['name']
     end
     hash
@@ -52,13 +53,13 @@ class Toggl < Project
   
   
   # Returns an array of hashes for a given url.
-  def self.get url
+  def self.get url, api_key
     uri = URI.parse( url )
     http = Net::HTTP.new( uri.host, uri.port )
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     request = Net::HTTP::Get.new( uri.request_uri )
-    request.basic_auth( API_KEY, "api_token" )
+    request.basic_auth( api_key, "api_token" )
     request["Content-Type"] = "application/json"
     response = http.request( request )
     
@@ -127,11 +128,16 @@ class Toggl < Project
     
     def refresh_data
       # reject entries without projects or whose project is not the one I need
-      settings['entries'] = modul.time_entries.select do |en|
+      settings['entries'] = modul.time_entries( api_key ).select do |en|
         en['pid'] == project_hash['id']
       end
       save!
     end
+    
+    def api_key
+      user.settings['toggl']['api_key']
+    end
+    
     
     # Takes same arguments as the Toggl#entries_for class method,
     # but searches only this instance's project entries.
@@ -213,7 +219,7 @@ class Toggl < Project
       return @project_hash if @project_hash
       
       if super_master?
-        @project_hash = modul.projects.find do |pr|
+        @project_hash = modul.projects( api_key ).find do |pr|
           pr['id'] == tt_project_id
         end
       end
