@@ -8,8 +8,9 @@ span.help-inline.input-info
   = f.hidden_field :tt_module
 
   = f.label "Select the project you'd like to connect to:"
-
-  = f.select( :tt_project_id, options_for_select( Toggl.projects_list.invert ),
+  - api_key = current_user.settings.toggl.api_key
+  - proj_list = Toggl.projects_list( api_key ).invert
+  = f.select( :tt_project_id, options_for_select( proj_list ),
     { class: "span3"})
   
   .modal-footer

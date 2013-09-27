@@ -14,20 +14,6 @@ class Toggl < Project
     get( url, api_key )
   end
   
-  # Time entries for a specific tag or date.
-  # Optionally supply entries to search from.
-  def self.entries_for tag: nil, date: nil, before_date: nil,
-    from_date: nil, entries_to_search: nil
-    
-    entries_to_search ||= time_entries( api_key )
-    entries_to_search.select do |en|
-      ( tag and en['tags'].map{ |t| t.upcase }.include?( tag.upcase ) ) ||
-      ( date and en['start'].to_date == date ) ||
-      ( before_date and en['start'].to_date < before_date ) ||
-      ( from_date and en['start'].to_date >= from_date )
-    end
-  end
-  
   def self.get_workspace_id api_key
     url = "#{API_URL}/workspaces"
     ar = get( url, api_key )
@@ -63,8 +49,10 @@ class Toggl < Project
     request["Content-Type"] = "application/json"
     response = http.request( request )
     
-    if response.code.to_i==200
+    if response.code.to_i==200 # OK
       hash = JSON.parse( response.body )
+    elsif response.code.to_i==403 # Authentication
+      raise Exceptions::AuthenticationError
     else
       puts "Error, code #{ response.code }."
       puts response.body
@@ -73,6 +61,12 @@ class Toggl < Project
   
   
   module Base
+    
+    def self.extended klass
+      klass.user.settings.toggl ||= OpenStruct.new
+      klass.settings['toggl'] ||= OpenStruct.new
+    end
+    
     # Take last number from description of latest time-entry.
     def milestone entries: entries
       entries.reverse.each do |en|
@@ -86,7 +80,7 @@ class Toggl < Project
     end
     
     def initialized?
-      tt_module and project_hash.present?
+      project_hash.present?
     end
     
     # Scans entry descriptions for dynamic finish line.
@@ -106,25 +100,41 @@ class Toggl < Project
 
     # Time entries for this project or stage.
     def entries
-      return @entries if @entries
+      ( entries = settings['toggl'].entries ) and return entries
 
       if is_stage?
-        @entries = modul.entries_for(
-          tag: title,
-          entries_to_search: master.entries
-        )
+        entries = master.entries_for( tag: title )
       else
-        if settings['entries'].present?
-          # When delayed_job works with rails 4.0...
-          # self.delay.refresh_data
-          # until then:
-          refresh_data
-        else
-          refresh_data
+        # What if there aren't any entries initialized in the user settings?
+        entries = user.settings.toggl.entries.select do |en|
+          en['pid'] == project_hash['id']
         end
-        @entries = settings['entries']
       end
+      settings['toggl'].entries = entries
+      save!
+      entries
     end
+    
+    # def entries
+    #   return @entries if @entries
+    # 
+    #   if is_stage?
+    #     @entries = modul.entries_for(
+    #       tag: title,
+    #       entries_to_search: master.entries
+    #     )
+    #   else
+    #     if settings['entries'].present?
+    #       # When delayed_job works with rails 4.0...
+    #       # self.delay.refresh_data
+    #       # until then:
+    #       refresh_data
+    #     else
+    #       refresh_data
+    #     end
+    #     @entries = settings['entries']
+    #   end
+    # end
     
     def refresh_data
       # reject entries without projects or whose project is not the one I need
@@ -135,16 +145,23 @@ class Toggl < Project
     end
     
     def api_key
-      user.settings['toggl']['api_key']
+      user.settings.toggl.api_key
     end
     
     
-    # Takes same arguments as the Toggl#entries_for class method,
-    # but searches only this instance's project entries.
-    def entries_for args
-      args[:entries_to_search] = entries
-      modul.entries_for( args )
+    # Time entries for a specific tag or date.
+    # Optionally supply entries to search from.
+    def entries_for tag: nil, date: nil, before_date: nil,
+      from_date: nil
+
+      entries.select do |en|
+        ( tag and en['tags'].map{ |t| t.upcase }.include?( tag.upcase ) ) ||
+        ( date and en['start'].to_date == date ) ||
+        ( before_date and en['start'].to_date < before_date ) ||
+        ( from_date and en['start'].to_date >= from_date )
+      end
     end
+
     
     # Project duration in seconds.
     def duration

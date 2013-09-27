@@ -1,4 +1,4 @@
-class Manual < Project
+class Manual# < Project
   # Manual Time tracking class, if no external one is used.
   module Base
 
