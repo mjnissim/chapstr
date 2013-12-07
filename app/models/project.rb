@@ -47,6 +47,7 @@ class Project < ActiveRecord::Base
   end
   
   # Recursively sums up all stages' relative progress.
+  # This method is the heart of the software!
   def relative_progress
     if stages.any?
       from_stages = stages.collect{ |pr| pr.relative_progress }.sum
@@ -100,6 +101,7 @@ class Project < ActiveRecord::Base
     
   end
   
+  # This is also an important method in the software (however simple).
   def next_charge
     ( pre_finalised_quote * relative_progress / 100 ) - charged_so_far
   end
