@@ -1,70 +1,74 @@
 class Toggl < Project
-  API_URL = "https://www.toggl.com/api/v8"
-
   DYNAMIC_FINISH_LINE = /(\d+) of (\d+)/i
   NUMBER_APPEARS = /.*\W(\d+)/
   
-  # https://www.toggl.com/user/edit
   
-  def self.time_entries api_key, from_date: 15.years.ago
-    tomorrow = CGI.escape( Date.tomorrow.to_time.iso8601 )
-    from_date = CGI.escape( from_date.to_time.iso8601 )
-    url = "#{API_URL}/time_entries"
-    url << "?start_date=#{from_date}&end_date=#{tomorrow}"
-    get( url, api_key )
-  end
-  
-  def self.get_workspace_id api_key
-    url = "#{API_URL}/workspaces"
-    ar = get( url, api_key )
-    ar.first.values.first
-  end
-  
-  def self.projects api_key
-    ws_id = get_workspace_id( api_key )
-    url = "#{API_URL}/workspaces/#{ws_id}/projects"
-    @@projects = get( url, api_key )
-  end
-  
-  # Returns a hash of module project IDs and names.
-  # Good for select-lists, etc.
-  def self.projects_list api_key
-    # FIX: fill projects list with inject instead of 4 lines.
-    hash = {}
-    projects( api_key ).each do |project|
-      hash[ project['id'] ] = project['name']
-    end
-    hash
-  end
-  
-  
-  # Returns an array of hashes for a given url.
-  def self.get url, api_key
-    uri = URI.parse( url )
-    http = Net::HTTP.new( uri.host, uri.port )
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    request = Net::HTTP::Get.new( uri.request_uri )
-    request.basic_auth( api_key, "api_token" )
-    request["Content-Type"] = "application/json"
-    response = http.request( request )
+  class Communicator
+    API_URL = "https://www.toggl.com/api/v8"
+    # https://www.toggl.com/user/edit
     
-    if response.code.to_i==200 # OK
-      hash = JSON.parse( response.body )
-    elsif response.code.to_i==403 # Authentication
-      raise Exceptions::AuthenticationError
-    else
-      puts "Error, code #{ response.code }."
-      puts response.body
+    def initialize api_key
+      @api_key = api_key
+    end
+  
+    def time_entries from_date: 15.years.ago
+      tomorrow = CGI.escape( Date.tomorrow.to_time.iso8601 )
+      from_date = CGI.escape( from_date.to_time.iso8601 )
+      url = "#{API_URL}/time_entries"
+      url << "?start_date=#{from_date}&end_date=#{tomorrow}"
+      get( url )
+    end
+  
+    def workspace_id
+      return @workspace_id if @workspace_id.present?
+      
+      url = "#{API_URL}/workspaces"
+      ar = get( url )
+      @workspace_id = ar.first.values.first
+    end
+  
+    def projects
+      url = "#{API_URL}/workspaces/#{workspace_id}/projects"
+      get( url )
+    end
+  
+    # Returns a hash of module project IDs and names.
+    # Good for select-lists, etc.
+    def projects_list
+      projects.inject({}) do |h, project|
+        h.merge( project['id'] => project['name'] )
+      end
+    end
+  
+    # Returns an array of hashes for a given url.
+    def get url
+      uri = URI.parse( url )
+      http = Net::HTTP.new( uri.host, uri.port )
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      request = Net::HTTP::Get.new( uri.request_uri )
+      request.basic_auth( @api_key, "api_token" )
+      request["Content-Type"] = "application/json"
+      response = http.request( request )
+    
+      if response.code.to_i==200 # OK
+        hash = JSON.parse( response.body )
+      elsif response.code.to_i==403 # Authentication
+        raise Exceptions::AuthenticationError
+      else
+        puts "Error, code #{ response.code }."
+        puts response.body
+      end
     end
   end
+  # End of class Communicator
   
   
   module Base
     
     def self.extended klass
-      klass.user.settings.toggl ||= OpenStruct.new
-      klass.settings['toggl'] ||= OpenStruct.new
+      # klass.user.settings.toggl ||= OpenStruct.new
+      # klass.settings.toggl ||= OpenStruct.new
     end
     
     # Take last number from description of latest time-entry.
@@ -100,17 +104,19 @@ class Toggl < Project
 
     # Time entries for this project or stage.
     def entries
-      ( entries = settings['toggl'].entries ) and return entries
+      return settings.entries if settings.entries.present?
 
       if is_stage?
         entries = master.entries_for( tag: title )
       else
-        # What if there aren't any entries initialized in the user settings?
+        # TODO: Fix entries method: What if there aren't any entries
+        # initialized in the user settings?
+        pid = project_hash['id']
         entries = user.settings.toggl.entries.select do |en|
-          en['pid'] == project_hash['id']
+          en['pid'] == pid
         end
       end
-      settings['toggl'].entries = entries
+      settings.entries = entries
       save!
       entries
     end
@@ -136,10 +142,12 @@ class Toggl < Project
     #   end
     # end
     
-    def refresh_data
+    def refresh_data force: false
+      com = modul::Communicator.new( api_key )
       # reject entries without projects or whose project is not the one I need
-      settings['entries'] = modul.time_entries( api_key ).select do |en|
-        en['pid'] == project_hash['id']
+      pid = project_hash['id']
+      settings.entries = com.time_entries.select do |en|
+        en['pid'] == pid
       end
       save!
     end
@@ -233,15 +241,17 @@ class Toggl < Project
     end
 
     def project_hash
-      return @project_hash if @project_hash
+      return settings.project_hash if settings.project_hash.present?
       
       if super_master?
-        @project_hash = modul.projects( api_key ).find do |pr|
+        com = modul::Communicator.new( api_key )
+        settings.project_hash = com.projects.find do |pr|
           pr['id'] == tt_project_id
         end
+        save!
       end
       
-      @project_hash
+      settings.project_hash
     end
   end
 end

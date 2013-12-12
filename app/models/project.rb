@@ -5,7 +5,7 @@ class Project < ActiveRecord::Base
     inverse_of: :stages
   has_many :invoices
   belongs_to :user
-  serialize :settings, Hash
+  serialize :settings, Hashery::OpenCascade
 
   NEW_PROJECT_TITLE = "New Project"
   

@@ -5,5 +5,5 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
   has_many :projects
-  serialize :settings, OpenStruct
+  serialize :settings, Hashery::OpenCascade
 end
