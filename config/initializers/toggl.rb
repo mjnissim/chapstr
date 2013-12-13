@@ -42,6 +42,7 @@ class Toggl < Project
   
     # Returns an array of hashes for a given url.
     def get url
+      puts "COMMUNICATING WITH SERVER COMMUNICATING WITH SERVER COMMUNICATING WITH SERVER "
       uri = URI.parse( url )
       http = Net::HTTP.new( uri.host, uri.port )
       http.use_ssl = true
@@ -67,8 +68,6 @@ class Toggl < Project
   module Base
     
     def self.extended klass
-      # klass.user.settings.toggl ||= OpenStruct.new
-      # klass.settings.toggl ||= OpenStruct.new
       klass.refresh_data if klass.needs_refresh?
     end
     

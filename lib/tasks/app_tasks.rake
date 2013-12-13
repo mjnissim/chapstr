@@ -1,5 +1,8 @@
 desc "Refresh Data"
 task :refresh_data => :environment do
+  User.all.each do |user|
+    user.refresh_data
+  end
 end
 
 desc "Program upgrade (single use task)"
