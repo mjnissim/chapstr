@@ -9,7 +9,8 @@ span.help-inline.input-info
 
   = f.label "Select the project you'd like to connect to:"
   - api_key = current_user.settings.toggl.api_key
-  - proj_list = Toggl.projects_list( api_key ).invert
+  - com = Toggl::Communicator.new( api_key )
+  - proj_list = com.projects_list.invert
   = f.select( :tt_project_id, options_for_select( proj_list ),
     { class: "span3"})
   

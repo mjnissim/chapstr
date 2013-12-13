@@ -69,6 +69,7 @@ class Toggl < Project
     def self.extended klass
       # klass.user.settings.toggl ||= OpenStruct.new
       # klass.settings.toggl ||= OpenStruct.new
+      klass.refresh_data if klass.needs_refresh?
     end
     
     # Take last number from description of latest time-entry.
@@ -104,52 +105,40 @@ class Toggl < Project
 
     # Time entries for this project or stage.
     def entries
-      return settings.entries if settings.entries.present?
-
+      settings.time_entries.present? ? settings.time_entries : []
+    end
+    
+    def refresh_data
+      refresh_entries
+      settings.last_pull_request = Time.now
+      save!
+    end
+    
+    def refresh_entries save: false
       if is_stage?
         entries = master.entries_for( tag: title )
       else
-        # TODO: Fix entries method: What if there aren't any entries
-        # initialized in the user settings?
+        # select only the entries that belong to my project
         pid = project_hash['id']
-        entries = user.settings.toggl.entries.select do |en|
+        entries = user.settings.toggl.time_entries.select do |en|
           en['pid'] == pid
         end
+        entries = [] if entries.none?
       end
-      settings.entries = entries
-      save!
-      entries
+      settings.time_entries = entries
+      save! if save
     end
     
-    # def entries
-    #   return @entries if @entries
-    # 
-    #   if is_stage?
-    #     @entries = modul.entries_for(
-    #       tag: title,
-    #       entries_to_search: master.entries
-    #     )
-    #   else
-    #     if settings['entries'].present?
-    #       # When delayed_job works with rails 4.0...
-    #       # self.delay.refresh_data
-    #       # until then:
-    #       refresh_data
-    #     else
-    #       refresh_data
-    #     end
-    #     @entries = settings['entries']
-    #   end
-    # end
+    def needs_refresh?
+      user_last_pull = user.settings.toggl.last_pull_request
+      user_last_pull = 10.years.ago if user_last_pull.blank?
+      
+      user_last_pull > last_pull_request
+    end
     
-    def refresh_data force: false
-      com = modul::Communicator.new( api_key )
-      # reject entries without projects or whose project is not the one I need
-      pid = project_hash['id']
-      settings.entries = com.time_entries.select do |en|
-        en['pid'] == pid
-      end
-      save!
+    def last_pull_request
+      date = settings.last_pull_request
+      date.present? ? date : 10.years.ago
     end
     
     def api_key
@@ -169,7 +158,6 @@ class Toggl < Project
         ( from_date and en['start'].to_date >= from_date )
       end
     end
-
     
     # Project duration in seconds.
     def duration
@@ -254,4 +242,5 @@ class Toggl < Project
       settings.project_hash
     end
   end
+  # End of module Base
 end
