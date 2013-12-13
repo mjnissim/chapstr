@@ -42,7 +42,7 @@ class Toggl < Project
   
     # Returns an array of hashes for a given url.
     def get url
-      puts "COMMUNICATING WITH SERVER COMMUNICATING WITH SERVER COMMUNICATING WITH SERVER "
+      puts "COMMUNICATING WITH TOGGL SERVER COMMUNICATING WITH TOGGL SERVER"
       uri = URI.parse( url )
       http = Net::HTTP.new( uri.host, uri.port )
       http.use_ssl = true
@@ -68,7 +68,7 @@ class Toggl < Project
   module Base
     
     def self.extended klass
-      klass.refresh_data if klass.needs_refresh?
+      # klass.refresh_data if klass.needs_refresh?
     end
     
     # Take last number from description of latest time-entry.

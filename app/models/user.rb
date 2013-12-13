@@ -17,5 +17,9 @@ class User < ActiveRecord::Base
       eval "#{module_settings}.last_pull_request = Time.now"
       save!
     end
+    
+    projects.each do |project|
+      project.refresh_data if project.needs_refresh?
+    end
   end
 end
