@@ -46,10 +46,10 @@ module ProjectsHelper
     return project.title if not (current_stage and refresh_on)
 
     milestone = current_stage.milestone
-    finish = current_stage.finish
+    # finish = current_stage.finish
 
-    if milestone and finish
-      "#{ milestone } of #{ finish } - " <<
+    if milestone #and finish
+      "#{ milestone } " <<
       "#{ project.relative_progress.to_i }% " <<
       "(#{ last_earned( project ) })"
     end
