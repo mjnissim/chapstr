@@ -28,7 +28,7 @@ module ProjectsHelper
   end
   
   def last_earned project
-    "#{ nice_price( project.earned_on( project.last_date ) ) } NIS"
+    "#{ nice_price( project.earned_on( project.last_date ) ) }₪"
   end
   
   def refresh_button project
@@ -49,7 +49,7 @@ module ProjectsHelper
     # finish = current_stage.finish
 
     if milestone #and finish
-      "#{ milestone } " <<
+      "#{ milestone } "                       <<
       "#{ project.relative_progress.to_i }% " <<
       "#{ last_earned( project ) }"
     end
