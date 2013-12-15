@@ -51,7 +51,7 @@ module ProjectsHelper
     if milestone #and finish
       "#{ milestone } " <<
       "#{ project.relative_progress.to_i }% " <<
-      "(#{ last_earned( project ) })"
+      "#{ last_earned( project ) }"
     end
   end
   
