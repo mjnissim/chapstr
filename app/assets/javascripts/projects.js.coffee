@@ -7,7 +7,7 @@ getModuleForm = ( module, project ) ->
   $.ajax(url: "/extensions/#{project}/#{module}", dataType: 'html').done (html) ->
 	  $("#module-form").html html
 
-refreshPage = (amt=300000) ->
+refreshPage = (amt=45000) ->
 	setTimeout (->
 	  location.reload 1
 	), amt
