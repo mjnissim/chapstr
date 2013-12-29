@@ -6,6 +6,7 @@ Chapstr::Application.routes.draw do
     member do
       get :setup
       post :set_refresh
+      patch :update_api_key
     end
   end
   

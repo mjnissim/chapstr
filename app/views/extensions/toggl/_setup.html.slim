@@ -1,19 +1,35 @@
-label What is your Toggl API Key?
-input type="text"
+- if @project.api_key_valid?
 
-span.help-inline.input-info
-  i.icon-question-sign
+  =form_for @project do | f |
+    = f.hidden_field :tt_module
 
-=form_for @project do | f |
-  = f.hidden_field :tt_module
+    = f.label "Select the project you'd like to connect to:"
+    - com = Toggl::Communicator.new( @project.api_key )
+    - proj_list = com.projects_list.invert
+    = f.select( :tt_project_id, options_for_select( proj_list ),
+      { class: "span3"})
 
-  = f.label "Select the project you'd like to connect to:"
-  - api_key = current_user.settings.toggl.api_key
-  - com = Toggl::Communicator.new( api_key )
-  - proj_list = com.projects_list.invert
-  = f.select( :tt_project_id, options_for_select( proj_list ),
-    { class: "span3"})
-  
-  .modal-footer
-  
-    = f.submit 'Save', :class=>"btn btn-primary"
+    .modal-footer
+
+      = f.submit 'Save', :class=>"btn btn-primary"
+
+- else 
+
+  =form_for( @project, url: update_api_key_project_path, remote: true ) do |f|
+    = f.hidden_field :tt_module
+    p What is your Toggl API Token?
+    small
+      ' Follow the link below and find it at the bottom of the page.
+      ' Then copy and paste it into the box.
+      br
+      a href="https://www.toggl.com/user/edit" target= '_blank' https://www.toggl.com/user/edit
+      br
+    = f.text_field :api_key, :class=>"error"
+    '
+    '
+    = f.submit 'Update', :class => "btn btn-primary btn-mini"
+    - if @project.api_key.present?
+      p.text-error Your API Token is invalid.
+    
+    / span.help-inline.input-info
+    /   i.icon-question-sign

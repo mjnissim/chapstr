@@ -5,19 +5,41 @@ class Toggl < Project
   
   class Communicator
     API_URL = "https://www.toggl.com/api/v8"
-    # https://www.toggl.com/user/edit
+    TOGGL_ENTRY_LIMITATION = 1000
     
     def initialize api_key
       @api_key = api_key
     end
+    
+    def api_key_valid?
+      workspace_id.present? rescue false
+    end
   
     def time_entries from_date: 15.years.ago
-      tomorrow = CGI.escape( Date.tomorrow.to_time.iso8601 )
-      from_date = CGI.escape( from_date.to_time.iso8601 )
-      url = "#{API_URL}/time_entries"
-      url << "?start_date=#{from_date}&end_date=#{tomorrow}"
-      get( url )
+      begin
+        url = time_entries_url( from_date )
+        entries = ( entries || [] ) + get( url )
+        from_date = ( entries.last['start'].to_time + 1 ) if entries.any?
+      end while entries.count == TOGGL_ENTRY_LIMITATION
+      entries
     end
+    
+    def time_entries_url from_date
+      url = "#{API_URL}/time_entries"
+      url << "?start_date=#{ date_to_url( from_date ) }"
+      url << "&end_date=#{ tomorrow_url }"
+    end
+    private :time_entries_url
+    
+    def tomorrow_url
+      date_to_url( Date.tomorrow )
+    end
+    private :tomorrow_url
+    
+    def date_to_url date
+      CGI.escape( date.to_time.iso8601 )
+    end
+    private :date_to_url
   
     def workspace_id
       return @workspace_id if @workspace_id.present?
@@ -144,6 +166,15 @@ class Toggl < Project
       user.settings.toggl.api_key
     end
     
+    def api_key= key
+      user.settings.toggl.api_key = key
+      user.save!
+    end
+    
+    def api_key_valid?
+      com = modul::Communicator.new( api_key )
+      com.api_key_valid?
+    end
     
     # Time entries for a specific tag or date.
     # Optionally supply entries to search from.

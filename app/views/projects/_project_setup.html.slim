@@ -9,9 +9,12 @@ div.modal.hide.fade(id="#{ idify( project ) }" aria-hidden="true"
     - h = Hash[ Project.implementations.map{ |i| [ i.to_s.titleize, i.to_s.underscore ] } ]
     = select_tag( :extention, options_for_select( h ),
       { :class => "selectpicker module", prompt: 'Please select', id: project.id } )
+
+    br
+    br
     
     div#module-form
-  
+    
   / .modal-footer
     / button.btn aria-hidden="true" data-dismiss="modal"
     / button.btn.btn-primary data-dismiss="modal" Save

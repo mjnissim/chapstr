@@ -17,10 +17,10 @@ module ProjectsHelper
   
   def link_to_modal_form project
     link_to "##{ idify( project ) }", :class => 'btn btn-mini btn-warning',
-        :'data-toggle' => "modal", :role=>"button" do
-      content_tag( :i, nil, :class => "icon-wrench" ) +
-      " Setup your project"
-    end
+      :'data-toggle' => "modal", :role=>"button" do
+        content_tag( :i, nil, :class => "icon-wrench" ) +
+        " Setup your project"
+        end
   end
   
   def idify project
@@ -35,7 +35,7 @@ module ProjectsHelper
     refresh_state = session[project.id][:set_refresh]
     button_to( set_refresh_project_path(project), remote: true,
       data: { toggle: 'button', state: refresh_state },
-        :class=>"btn btn-primary btn-small refresh-button" ) do
+      :class=>"btn btn-primary btn-small refresh-button" ) do
         refresh_state ? "Refresh On" : "Refresh"
     end
   end

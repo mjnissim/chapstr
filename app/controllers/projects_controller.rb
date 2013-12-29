@@ -74,6 +74,7 @@ class ProjectsController < ApplicationController
           render nothing: true
         else
           @project.tt_module = @extension.camelize
+          @project.initialize_extension
           render partial: "extensions/#{@extension}/setup"
         end
       end
@@ -85,6 +86,13 @@ class ProjectsController < ApplicationController
     session[@project.id][:set_refresh] = !!!refresh
     render nothing: true
   end
+  
+  def update_api_key
+    extension = project_params[:tt_module]
+    @project.tt_module = extension
+    @project.initialize_extension
+    @project.api_key = project_params[:api_key]
+  end
 
   private
     # Use callbacks to share common setup or constraints between actions.
@@ -95,6 +103,10 @@ class ProjectsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def project_params
-      params.require(:project).permit(:title, :start, :finish, :quote, :per_hour, :expected_percentage, :hours_so_far, :hours_expected, :milestone, :milestone_label, :date_started, :date_ended, :completed, :after_finalised, :finalised, :project_id, :tt_module, :tt_project_id, :comments, :user_id)
+      params.require(:project).permit(:title, :start, :finish, :quote,
+        :per_hour, :expected_percentage, :hours_so_far, :hours_expected,
+        :milestone, :milestone_label, :date_started, :date_ended, :completed,
+        :after_finalised, :finalised, :project_id, :tt_module, :tt_project_id,
+        :comments, :user_id, :api_key)
     end
 end
